@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/xp.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+
+<body>
+    <section id="desktop">
+        <div class="desktop-icon" id="computer-icon" style="top: 20px; left: 20px;">
+            <div class="icon-container">
+                <img src="{{ url_for('static', filename='Icons/computer.ico') }}" alt="Computer" width="42px" height="42px">
+            </div>
+            <div class="label">My Computer</div>
+        </div>
+
+        <div id="taskbar">
+            <div class="background sliced vertical">
+                <div class="row top"></div>
+                <div class="row middle"></div>
+                <div class="row bottom"></div>
+            </div>
+            <div id="start-button">
+                <div class="container">
+                    <div class="background sliced">
+                        <div class="column left">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                        <div class="column middle">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                        <div class="column right">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <span class="icon"><img
+                                src="https://raw.githubusercontent.com/tdcosta100/WindowsXP/master/images/System/WindowsLogo-small.png" /></span>
+                        <span class="text">Start</span>
+                    </div>
+                    <div class="overlay" title="Click here to begin"></div>
+                </div>
+            </div>
+            <div id="task-band">
+                <!-- Taskbar items will be added here dynamically -->
+            </div>
+            <div id="tray-notify">
+                <div class="container">
+                    <div class="background sliced">
+                        <div class="column left">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                        <div class="column middle">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                        <div class="column right">
+                            <div class="row top"></div>
+                            <div class="row middle"></div>
+                            <div class="row bottom"></div>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div class="clock">
+                            <div class="text">01:57</div>
+                            <div class="overlay" title="Monday, April 8, 2019"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- My Computer Window -->
+    <div id="my-computer-window" class="window"
+        style="display: none; width: 600px; height: 400px; top: 50px; left: 100px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <img src="{{ url_for('static', filename='Icons/computer.ico') }}" width="20px">
+            <div class="title-bar-text">My Computer</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <menu role="menubar">
+                <li role="menuitem">File</li>
+                <li role="menuitem">View</li>
+                <li role="menuitem">Favorites</li>
+                <li role="menuitem">Tools</li>
+                <li role="menuitem">Help</li>
+            </menu>
+            <menu role="actionmenu">
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/back button.png') }}">
+                    Back
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/forward button.png') }}">
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/search.ico') }}">
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/Folders.png') }}">
+                </div>
+            </menu>
+            <menu role="addressbar">
+                <p>Address</p>
+                <search id="address-bar">My Computer</search>
+                <img src="{{ url_for('static', filename='Icons/proceed.ico') }}">
+            </menu>
+            <div class="content-container">
+                <!-- Left sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span>
+                            <span>Team Members</span>
+                        </div>
+                        <div class="sidebar-content">
+                            <div class="sidebar-item">
+                                <span>Ahmed Mohamed Ahmed</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <span>Ahmed Mohamed Nasr</span>
+                            </div>
+                            <div class="sidebar-item">
+                                <span>Ahmed Salah</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="sidebar-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span>
+                            <span>Projects</span>
+                        </div>
+                        <div class="sidebar-content">
+                            <div class="sidebar-item">
+                                <span>Project 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main content area -->
+                <div class="main-content">
+                    <div class="content-section">
+                        <h2 class="section-title">Hard Disk Drives</h2>
+                        <div class="content-items">
+                            <div class="Folder">
+                                <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}">
+                                <span>Project 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Properties Dialog -->
+    <div id="properties-dialog" class="window"
+        style="display: none; width: 500px; height: 450px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project Properties</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <div class="tab active" data-tab="general">General</div>
+                    <div class="tab" data-tab="tasks">Tasks</div>
+                    <div class="tab" data-tab="deliverables">Deliverables</div>
+                    <div class="tab" data-tab="details">Details</div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- General Tab -->
+                    <div class="tab-pane active" id="general-tab">
+                        <div class="properties-icon">
+                            <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}" width="64" height="64">
+                        </div>
+                        <div class="properties-info">
+                            <div class="info-row">
+                                <span class="info-label">Project Name:</span>
+                                <span class="info-value">Information Theory and Coding</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Course Code:</span>
+                                <span class="info-value">CIE 425</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Team Members:</span>
+                                <span class="info-value">3</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">In Progress</span>
+                            </div>
+                        </div>
+                        <div class="description-section">
+                            <h3>Description</h3>
+                            <p>Create a GUI-based tool that allows a user to add any text file and results in the
+                                entropy of the text characters written in the file. The GUI can be built using Matlab
+                                App Designer or any other software package.</p>
+                        </div>
+                    </div>
+
+                    <!-- Tasks Tab -->
+                    <div class="tab-pane" id="tasks-tab">
+                        <h3>Project Tasks</h3>
+                        <div class="tasks-list">
+                            <div class="task-item">
+                                <input type="checkbox" id="task1" checked>
+                                <label for="task1">Read the .txt file</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task2" checked>
+                                <label for="task2">Extract characters from the file</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task3" checked>
+                                <label for="task3">Find the PMF of the characters</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task4">
+                                <label for="task4">Display a plot showing the probability distribution</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task5">
+                                <label for="task5">Display the Entropy of the characters</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task6">
+                                <label for="task6">Display the Relative Entropy</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task7">
+                                <label for="task7">Calculate and display joint entropy</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task8">
+                                <label for="task8">Calculate and display conditional entropy</label>
+                            </div>
+                            <div class="task-item">
+                                <input type="checkbox" id="task9">
+                                <label for="task9">Verify the Chain Rule</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deliverables Tab -->
+                    <div class="tab-pane" id="deliverables-tab">
+                        <h3>Project Deliverables</h3>
+                        <div class="deliverables-list">
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📄</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Executable File</div>
+                                    <div class="deliverable-desc">GUI Tool executable file</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📁</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Source Code</div>
+                                    <div class="deliverable-desc">All source code files (.m files)</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📷</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Screenshots</div>
+                                    <div class="deliverable-desc">Screenshots for the GUI output</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📝</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Report</div>
+                                    <div class="deliverable-desc">Comments on results and Chain Rule validity</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Details Tab -->
+                    <div class="tab-pane" id="details-tab">
+                        <h3>Project Details</h3>
+                        <div class="details-section">
+                            <div class="detail-group">
+                                <h4>Deadline</h4>
+                                <div class="detail-value">December 15, 2023</div>
+                            </div>
+                            <div class="detail-group">
+                                <h4>Submission Rules</h4>
+                                <ul class="detail-list">
+                                    <li>Teams of up to 3 members</li>
+                                    <li>Late submission penalty: 15% for first 2 days</li>
+                                    <li>Additional 15% for next 2 days</li>
+                                    <li>No submissions accepted after 4 days</li>
+                                </ul>
+                            </div>
+                            <div class="detail-group">
+                                <h4>Grading Criteria</h4>
+                                <ul class="detail-list">
+                                    <li>60%: Completeness and correctness</li>
+                                    <li>20%: Clarity of figures and labeling</li>
+                                    <li>20%: Report writing and organization</li>
+                                </ul>
+                            </div>
+                            <div class="detail-group">
+                                <h4>Additional Notes</h4>
+                                <p>All team members are accountable for all project parts. Reports should not be shared
+                                    with other teams. In-person discussions are encouraged but copying reports will
+                                    result in 0 points for both parties.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dialog Buttons -->
+            <div class="dialog-buttons">
+                <button class="xp-button">OK</button>
+                <button class="xp-button">Cancel</button>
+                <button class="xp-button">Apply</button>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+    <div id="upload-dialog" class="window"
+        style="display: none; width: 400px; height: auto; top: 150px; left: 300px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Upload File</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="upload-content">
+                <div class="upload-message">
+                    <p>Select a text file to upload for analysis:</p>
+                </div>
+                <div class="file-input-container">
+                    <input type="file" id="file-input" accept=".txt" style="display: none;">
+                    <button id="file-select-button" class="xp-button">Choose File</button>
+                    <span id="file-name">No file selected</span>
+                </div>
+                <div class="upload-progress" style="display: none; margin-top: 15px;">
+                    <div class="progress-container">
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                        <div class="progress-box"></div>
+                    </div>
+                </div>
+                <div class="dialog-buttons" style="margin-top: 20px; margin-bottom: 10px;">
+                    <button id="upload-button" class="xp-button" disabled>Upload</button>
+                    <button id="cancel-button" class="xp-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+    <!-- Context Menu -->
+    <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" data-action="open">
+            Open
+        </div>
+        <div class="context-menu-separator"></div>
+        <div class="context-menu-item" data-action="properties">
+            Properties
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html>

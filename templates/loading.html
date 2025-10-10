@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='loading.css') }}">
+</head>
+
+<body>
+    <!-- Initial Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="window">
+            <img src="{{ url_for('static', filename='Logo.png') }}">
+            <div class="logo">
+                <p class="top">CIE 425</p>
+                <p class="mid">Information<span>XP</span></p>
+                <p class="bottom">Theory</p>
+            </div>
+            <div class="container">
+                <div class="box"></div>
+                <div class="box"></div>
+                <div class="box"></div>
+            </div>
+        </div>
+        <div class="page-footer">
+            <div class="footer-left">
+                <p>Copyright © CIE 425</p>
+            </div>
+            <div class="footer-right">
+                <p>CIE 425</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Welcome Image Screen -->
+    <div id="welcome-image" class="welcome-screen" style="display: none;">
+        <img src="{{ url_for('static', filename='welcome.jpg') }}" alt="Welcome" class="welcome-img">
+    </div>
+
+    <!-- Hidden Audio Element -->
+    <audio id="welcome-audio" preload="auto">
+        <source src="{{ url_for('static', filename='welcome.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const welcomeImage = document.getElementById('welcome-image');
+            const welcomeAudio = document.getElementById('welcome-audio');
+            
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                
+                welcomeImage.style.display = 'flex';
+                
+                setTimeout(() => {
+                    welcomeAudio.play()
+                        .then(() => {
+                            console.log('Audio playing successfully');
+                        })
+                        .catch(error => {
+                            console.error('Error playing audio:', error);
+                            setTimeout(() => {
+                                window.location.href = '{{ url_for("index") }}';
+                            }, 3000);
+                        });
+                    
+                    welcomeAudio.addEventListener('ended', function() {
+                        window.location.href = '{{ url_for("index") }}';
+                    });
+                    
+                    setTimeout(() => {
+                        window.location.href = '{{ url_for("index") }}';
+                    }, 15000);
+                    
+                }, 3000);
+                
+            }, 3000);
+        });
+    </script>
+</body>
+
+</html>
