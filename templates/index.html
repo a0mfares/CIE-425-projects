@@ -4,17 +4,32 @@
 <head>
     <link rel="stylesheet" href="https://unpkg.com/xp.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='person-styles.css') }}">
 </head>
 
 <body>
     <section id="desktop">
         <div class="desktop-icon" id="computer-icon" style="top: 20px; left: 20px;">
             <div class="icon-container">
-                <img src="{{ url_for('static', filename='Icons/computer.ico') }}" alt="Computer" width="42px" height="42px">
+                <img src="{{ url_for('static', filename='Icons/computer.ico') }}" alt="Computer" width="42px"
+                    height="42px">
             </div>
             <div class="label">My Computer</div>
         </div>
-
+        <div class="desktop-icon" id="my-network" style="top: 100px; left: 20px;">
+            <div class="icon-container">
+                <img src="{{ url_for('static', filename='Icons/my-network.ico') }}" alt="Network" width="42px"
+                    height="42px">
+            </div>
+            <div class="label">My Network</div>
+        </div>
+        <div class="desktop-icon" id="minesweeper-icon" style="top: 180px; left: 20px;">
+            <div class="icon-container">
+                <img src="{{ url_for('static', filename='Icons/Minesweeper.jpg') }}" alt="Minesweeper" width="42px"
+                    height="42px">
+            </div>
+            <div class="label">Minesweeper</div>
+        </div>
         <div id="taskbar">
             <div class="background sliced vertical">
                 <div class="row top"></div>
@@ -49,7 +64,6 @@
                 </div>
             </div>
             <div id="task-band">
-                <!-- Taskbar items will be added here dynamically -->
             </div>
             <div id="tray-notify">
                 <div class="container">
@@ -127,24 +141,6 @@
                     <div class="sidebar-section">
                         <div class="sidebar-header" onclick="toggleSection(this)">
                             <span class="toggle-icon">▼</span>
-                            <span>Team Members</span>
-                        </div>
-                        <div class="sidebar-content">
-                            <div class="sidebar-item">
-                                <span>Ahmed Mohamed Ahmed</span>
-                            </div>
-                            <div class="sidebar-item">
-                                <span>Ahmed Mohamed Nasr</span>
-                            </div>
-                            <div class="sidebar-item">
-                                <span>Ahmed Salah</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="sidebar-section">
-                        <div class="sidebar-header" onclick="toggleSection(this)">
-                            <span class="toggle-icon">▼</span>
                             <span>Projects</span>
                         </div>
                         <div class="sidebar-content">
@@ -167,6 +163,266 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- My Network Window -->
+    <div id="my-network-window" class="window"
+        style="display: none; width: 600px; height: 400px; top: 50px; left: 100px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <img src="{{ url_for('static', filename='Icons/my-network.ico') }}" width="20px">
+            <div class="title-bar-text">My Network</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <menu role="menubar">
+                <li role="menuitem">File</li>
+                <li role="menuitem">View</li>
+                <li role="menuitem">Favorites</li>
+                <li role="menuitem">Tools</li>
+                <li role="menuitem">Help</li>
+            </menu>
+            <menu role="actionmenu">
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/back button.png') }}">
+                    Back
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/forward button.png') }}">
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/search.ico') }}">
+                </div>
+                <div class="menuitem">
+                    <img src="{{ url_for('static', filename='Icons/Folders.png') }}">
+                </div>
+            </menu>
+            <menu role="addressbar">
+                <p>Address</p>
+                <search id="address-bar">My Network</search>
+                <img src="{{ url_for('static', filename='Icons/proceed.ico') }}">
+            </menu>
+            <div class="content-container">
+                <!-- Left sidebar -->
+                <div class="sidebar">
+                    <div class="sidebar-section">
+                        <div class="sidebar-header" onclick="toggleSection(this)">
+                            <span class="toggle-icon">▼</span>
+                            <span>Team Members</span>
+                        </div>
+                        <div class="sidebar-content">
+                            <span>
+                                This folder shows our team double click on anyone to check his skills and information.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Main content area -->
+                <div class="main-content">
+                    <div class="content-section">
+                        <h2 class="section-title">Team Members</h2>
+                        <div class="content-items">
+                            <div class="Folder person-folder" data-person="ahmed-mohamed-ahmed">
+                                <img src="{{ url_for('static', filename='Icons/person.ico') }}">
+                                <span>Ahmed Mohamed Ahmed</span>
+                            </div>
+                            <div class="Folder person-folder" data-person="ahmed-mohamed-nasr">
+                                <img src="{{ url_for('static', filename='Icons/person.ico') }}">
+                                <span>Ahmed Mohamed Nasr</span>
+                            </div>
+                            <div class="Folder person-folder" data-person="abdelhady">
+                                <img src="{{ url_for('static', filename='Icons/person.ico') }}">
+                                <span>Abdelhady Mohamed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Person Properties Dialog -->
+    <div id="person-properties-dialog" class="window"
+        style="display: none; width: 500px; height: 450px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <img src="{{ url_for('static', filename='Icons/person.ico') }}" width="20" height="20">
+            <div class="title-bar-text">Person Properties</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <!-- Tab Navigation -->
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <div class="tab active" data-tab="general">General</div>
+                    <div class="tab" data-tab="education">Education</div>
+                    <div class="tab" data-tab="skills">Skills</div>
+                    <div class="tab" data-tab="experience">Experience</div>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- General Tab -->
+                    <div class="tab-pane active" id="general-tab">
+                        <div class="properties-icon">
+                            <img src="{{ url_for('static', filename='Icons/person.ico') }}" width="64" height="64">
+                        </div>
+                        <div class="properties-info">
+                            <div class="info-row">
+                                <span class="info-label">Name:</span>
+                                <span class="info-value" id="person-name">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Student ID:</span>
+                                <span class="info-value" id="person-id">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Email:</span>
+                                <span class="info-value" id="person-email">-</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Phone:</span>
+                                <span class="info-value" id="person-phone">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Education Tab -->
+                    <div class="tab-pane" id="education-tab">
+                        <h3>Education</h3>
+                        <div class="education-list" id="person-education">
+                        </div>
+                    </div>
+
+                    <!-- Skills Tab -->
+                    <div class="tab-pane" id="skills-tab">
+                        <h3>Skills</h3>
+                        <div class="skills-list" id="person-skills">
+                        </div>
+                    </div>
+
+                    <!-- Experience Tab -->
+                    <div class="tab-pane" id="experience-tab">
+                        <h3>Experience</h3>
+                        <div class="experience-list" id="person-experience">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dialog Buttons -->
+            <div class="dialog-buttons">
+                <button class="xp-button">OK</button>
+                <button class="xp-button">Cancel</button>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <div id="minesweeper-window" class="window"
+        style="display: none; width: 220px; height: auto; top: 100px; left: 300px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <img src="{{ url_for('static', filename='Icons/Minesweeper.jpg') }}" width="20px">
+            <div class="title-bar-text">Minesweeper</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize" disabled="true"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+              <menu role="menubar">
+            <li role="menuitem" id="game-menu">
+                New Game
+                <div class="dropdown-menu" id="game-dropdown">
+                    <div class="menu-item" data-difficulty="beginner">Beginner</div>
+                    <div class="menu-item" data-difficulty="intermediate">Intermediate</div>
+                    <div class="menu-item" data-difficulty="expert">Expert</div>
+                    <div class="menu-separator"></div>
+                    <div class="menu-item" data-action="exit">Exit</div>
+                </div>
+            </li>
+            <li role="menuitem" id="help-menu">Help</li>
+        </menu>
+            <div id="minesweeper-game-container">
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Minesweeper Help Window -->
+    <div id="minesweeper-help-window" class="window"
+        style="display: none; width: 450px; height: 400px; top: 150px; left: 350px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <img src="{{ url_for('static', filename='Icons/Minesweeper.jpg') }}" width="20px">
+            <div class="title-bar-text">Minesweeper Help</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="help-content">
+                <h2>How to Play Minesweeper</h2>
+
+                <div class="help-section">
+                    <h3>Objective</h3>
+                    <p>The objective of Minesweeper is to clear the board containing hidden mines without detonating any
+                        of them.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Game Rules</h3>
+                    <ul>
+                        <li><strong>Left Click:</strong> Reveal a cell</li>
+                        <li><strong>Right Click:</strong> Place or remove a flag</li>
+                        <li>Numbers indicate how many mines are adjacent to that cell</li>
+                        <li>Use the numbers to deduce where mines are located</li>
+                        <li>Flag all mines to win the game</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Difficulty Levels</h3>
+                    <ul>
+                        <li><strong>Beginner:</strong> 9x9 grid with 10 mines</li>
+                        <li><strong>Intermediate:</strong> 16x16 grid with 40 mines</li>
+                        <li><strong>Expert:</strong> 16x30 grid with 99 mines</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Game Display</h3>
+                    <ul>
+                        <li><strong>Mine Counter:</strong> Shows remaining mines (total mines - flags placed)</li>
+                        <li><strong>Smiley Face:</strong> Click to restart the game</li>
+                        <li><strong>Timer:</strong> Shows elapsed time in seconds</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Tips</h3>
+                    <ul>
+                        <li>Start by clicking in the center or corners</li>
+                        <li>Look for patterns in the numbers</li>
+                        <li>When in doubt, flag suspicious cells</li>
+                        <li>Empty cells will automatically reveal adjacent cells</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <button class="xp-button help-close-btn">OK</button>
             </div>
         </div>
         <div class="resize-handle"></div>
