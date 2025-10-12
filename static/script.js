@@ -151,7 +151,7 @@ function makeWindowInteractive(windowElement) {
     windowElement.find('.title-bar').off('mousedown.drag');
     windowElement.find('.resize-handle').off('mousedown.resize');
     windowElement.find('.title-bar-controls button').off('click.control');
-    
+
     // Add drag handler to title bar
     windowElement.find('.title-bar').on('mousedown.drag', function (e) {
         if ($(e.target).is("button")) return;
@@ -252,7 +252,7 @@ function toggleSection(header) {
 }
 
 // Initialize all functionality when document is ready
- $(document).ready(function () {
+$(document).ready(function () {
     console.log("Document ready, initializing...");
 
     // Check if taskbar elements exist
@@ -333,16 +333,35 @@ function toggleSection(header) {
         }
     });
 
-    $(".desktop-icon").on("dblclick", function () {
-        const iconName = $(this).find(".label").text();
-        console.log("Double clicked on:", iconName);
-        if (iconName === "My Computer") {
-            openWindow($("#my-computer-window"), "My Computer");
-        }
+    $("#computer-icon").on("dblclick", function () {
+        // Reset My Computer content to default when opening
+        $('#my-computer-window .content-items').empty();
+        $('.section-title').show();
+
+        $('#my-computer-window .content-items').append(`
+            <div class="Folder">
+                <img src="/static/Icons/HardDrive.ico">
+                <span>Project 1</span>
+            </div>
+        `);
+
+        // Re-attach the click handler for Project 1
+        $('.Folder').on('click', function (e) {
+            $('.Folder').removeClass('selected');
+            $(this).addClass('selected');
+
+            const folderName = $(this).find('span').text();
+            if (folderName === 'Project 1') {
+                showUploadDialog();
+            }
+        });
+
+        openWindow($("#my-computer-window"), "My Computer");
     });
 
+
     // Initialize all existing windows as interactive
-    $(".window").each(function() {
+    $(".window").each(function () {
         makeWindowInteractive($(this));
     });
 
@@ -424,7 +443,7 @@ function toggleSection(header) {
             // Show boxes one by one
             let currentBox = 0;
             const totalBoxes = $('.progress-box').length;
-            const intervalTime = 200; // Time between each box appearing (in milliseconds)
+            const intervalTime = 150;
 
             const showNextBox = setInterval(function () {
                 if (currentBox < totalBoxes) {
@@ -483,6 +502,8 @@ function toggleSection(header) {
                     setTimeout(function () {
                         openAnalysisFiles(response);
                     }, 500);
+                    $('.section-title').hide();
+
                 },
                 error: function (xhr, status, error) {
                     // Hide progress animation
@@ -498,28 +519,28 @@ function toggleSection(header) {
         }
     });
 
-    // Function to update folder content with analysis results
     function updateFolderContent(data) {
-        // Clear existing content
-        $('.content-items').empty();
+        // Clear existing content ONLY from My Computer window
+        $('#my-computer-window .content-items').empty();
 
         // Add the analysis files - using existing icons as fallbacks
         const analysisFile = $(`
-    <div class="Folder analysis-file" data-type="text">
-        <img src="/static/Icons/text.ico">
-        <span>analysis.txt</span>
-    </div>
-`);
+        <div class="Folder analysis-file" data-type="text">
+            <img src="/static/Icons/text.ico">
+            <span>analysis.txt</span>
+        </div>
+    `);
 
         const pmfFile = $(`
-    <div class="Folder analysis-file" data-type="image">
-        <img src="/static/Icons/image-file.ico">
-        <span>pmf.png</span>
-    </div>
-`);
+        <div class="Folder analysis-file" data-type="image">
+            <img src="/static/Icons/image-file.ico">
+            <span>pmf.png</span>
+        </div>
+    `);
 
-        $('.content-items').append(analysisFile);
-        $('.content-items').append(pmfFile);
+        // Add to My Computer window only
+        $('#my-computer-window .content-items').append(analysisFile);
+        $('#my-computer-window .content-items').append(pmfFile);
 
         // Store the analysis data for later use
         window.analysisData = data;
@@ -848,4 +869,789 @@ function toggleSection(header) {
     });
 
     console.log("Initialization complete");
+});
+
+// Person data
+const personData = {
+    "ahmed-mohamed-ahmed": {
+        name: "Ahmed Mohamed Ahmed",
+        id: "202200977",
+        email: "amfares131217@gmail.com",
+        phone: "+201064530052",
+        education: [
+            {
+                degree: "Bachelor's degree in Communication and Information",
+                field: "Communication and Information Engineering",
+                institution: "University of Science, Technology and Innovation in Zewail City",
+                year: "2022-2027"
+            }
+        ],
+        skills: [
+            "Python",
+            "C++",
+            "C#",
+            "Dart",
+            "JavaScript",
+            "ASP.NET",
+            "Flask",
+            "Flutter",
+            "HTML/CSS",
+            "SQL",
+            "Git/GitHub",
+            "MATLAB Engine API",
+            "NGROK",
+            "MS SQL Server",
+            "Code.org",
+            "pywidevine"
+        ],
+        experience: [
+            {
+                position: "Demi Summer Instructor",
+                company: "Demi",
+                period: "June 2024 - September 2024",
+                description: "Taught 5th grade students basic programming and artificial intelligence concepts using block programming"
+            },
+            {
+                position: "Demi 2nd Intake Instructor",
+                company: "Demi",
+                period: "October 2024 - December 2024",
+                description: "Taught 4th and 5th grade basic programming concepts for mobile applications development using Code.org"
+            }
+        ],
+        projects: [
+            {
+                name: "Academic Planner",
+                description: "Website built with ASP.NET with user-friendly interface and MS SQL database to help students manage their academic plans"
+            },
+            {
+                name: "Prop App",
+                description: "Flutter project that bridges MATLAB with Flutter using a Flask server and MATLAB engine API, tunneled by NGROK"
+            },
+            {
+                name: "Brick Breaker",
+                description: "Classic Brick Breaker game developed with C++ and CMU Graphics Library using Object Oriented Programming"
+            },
+            {
+                name: "Decipher",
+                description: "Python-based tool for video content decryption using pywidevine library to handle Widevine-encrypted streams"
+            }
+        ],
+        extracurricular: [
+            {
+                position: "Head of Application Development Committee",
+                organization: "Google Developer Student Club at Zewail City",
+                period: "September 2023 - May 2024",
+                description: "Mentored team members, organized workshops, conducted online sessions, prepared curriculum and materials"
+            }
+        ],
+        softSkills: [
+            "Leadership",
+            "Team Mentoring",
+            "Project Management",
+            "Public Speaking",
+            "Curriculum Design",
+            "Technical Writing"
+        ],
+        languages: [
+            { language: "English", level: "B2" },
+            { language: "Arabic", level: "Native Speaker" }
+        ]
+    },
+    "ahmed-mohamed-nasr": {
+        name: "Ahmed Mohamed Elsaid",
+        id: "20205678",
+        email: "s-ahmed.nasr@zewailcity.edu.eg",
+        phone: "+20 1004639700",
+        education: [
+            {
+                degree: "Bachelor of Engineering",
+                field: "Communication and Information Engineering",
+                institution: "University of Science and Technology (UST), Zewail City",
+                year: "2022-Present"
+            }
+        ],
+        skills: [
+            "Object-Oriented Programming",
+            "Python (pandas, matplotlib)",
+            "MATLAB",
+            "C++/C#",
+            "HTML/CSS",
+            ".NET",
+            "SQL",
+            "Azure",
+            "Seaborn",
+            "NumPy",
+            "SciPy",
+            "Machine Learning",
+            "Data Engineering"
+        ],
+        experience: [
+            {
+                position: "Microsoft Data Engineering Trainee",
+                company: "Digital Egypt Pioneer",
+                period: "June 2023 - November 2023",
+                description: "Implemented ETL solutions, analyzed data using Python libraries, and developed machine learning models"
+            }
+        ],
+        teachingExperience: [
+            {
+                position: "JTA (Junior Teaching Assistant)",
+                institution: "University of Science and Technology, Zewail City",
+                period: "September 2023 - February 2024",
+                description: "Assisted with course delivery, examinations' monitoring, and supported students in understanding core computer science concepts"
+            }
+        ],
+        projects: [
+            {
+                name: "DEPI Final Project",
+                description: "Developed a program integrating Random Forest for price prediction and K-Means for customer segmentation",
+                link: "https://github.com/AhmedNasr5804/Depi_project"
+            },
+            {
+                name: "Random Variable Analysis",
+                description: "Flutter project that bridges MATLAB with Flutter using a Flask server and MATLAB engine API"
+            },
+            {
+                name: "Brick Breaker",
+                description: "Classic Brick Breaker game developed with C++ and CMU Graphics Library using Object Oriented Programming"
+            },
+            {
+                name: "OS Process Scheduler and Memory Management System",
+                description: "Simulation in C on Manjaro Linux to schedule processes using RR, SJF, and HPF algorithms"
+            },
+            {
+                name: "3-Bit Arithmetic and Logic Unit (ALU)",
+                description: "ALU capable of performing various arithmetic and logical operations with overflow, carry, zero, and negative flags"
+            }
+        ],
+        extracurricular: [
+            {
+                position: "Member",
+                organization: "Data Science Team at Google Developer Club, Zewail City",
+                period: "September 2023 - Present",
+                description: "Contributed to organizing events and data science competitions, collaborated in competitions, and mentored newcomers"
+            }
+        ],
+        courses: [
+            {
+                name: "Neural Networks and Deep Learning",
+                provider: "Coursera | DeepLearning.AI",
+                period: "September 2023",
+                duration: "24 hours"
+            },
+            {
+                name: "Improving Deep Neural Networks: Hyperparameter Tuning, Regularization and Optimization",
+                provider: "Coursera | DeepLearning.AI",
+                period: "September 2023",
+                duration: "23 hours"
+            },
+            {
+                name: "Databases and SQL for Data Science with Python",
+                provider: "Coursera | IBM",
+                period: "September 2022",
+                duration: "20 hours"
+            }
+        ],
+        softSkills: [
+            "Time Management",
+            "Leadership",
+            "Communication Skills",
+            "Project Management"
+        ],
+        languages: [
+            { language: "English", level: "C2" },
+            { language: "Arabic", level: "Native Speaker" }
+        ]
+    },
+    "abdelhady": {
+        name: "Abdelhady Mohamed",
+        id: "20209012",
+        email: "abdelhady@university.edu",
+        phone: "+20 555 123 4567",
+        education: [
+            {
+                degree: "Bachelor of Engineering",
+                field: "Communication & Information Engineering",
+                institution: "University of Science, Technology and Innovation at zewail city",
+                year: "2022-2027"
+            }
+        ],
+        skills: [
+            "MATLAB",
+            "Signal Processing",
+            "Information Theory",
+            "Data Compression",
+            "Cryptography"
+        ],
+        experience: [
+            {
+                position: "Research Assistant",
+                company: "Information Theory Lab",
+                period: "2022-Present",
+                description: "Conducted research on data compression algorithms"
+            }
+        ]
+    }
+};
+
+// Function to show person properties dialog
+function showPersonPropertiesDialog(personId) {
+    const person = personData[personId];
+    if (!person) return;
+
+    // Update the title with the person's name
+    $('#person-properties-dialog .title-bar-text').text(`${person.name} Properties`);
+
+    // Calculate position to center the dialog on screen
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 450;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    // Set position and show the dialog
+    $('#person-properties-dialog').css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    // Add to taskbar
+    addToTaskbar($("#person-properties-dialog"), `${person.name} Properties`);
+    bringToFront($("#person-properties-dialog"));
+
+    // Populate the General tab
+    $('#person-name').text(person.name);
+    $('#person-id').text(person.id);
+    $('#person-email').text(person.email);
+    $('#person-phone').text(person.phone);
+
+    // Populate the Education tab
+    const educationList = $('#person-education');
+    educationList.empty();
+    person.education.forEach(edu => {
+        const eduItem = $(`
+                    <div class="education-item">
+                        <div class="edu-degree">${edu.degree} in ${edu.field}</div>
+                        <div class="edu-institution">${edu.institution}</div>
+                        <div class="edu-year">${edu.year}</div>
+                    </div>
+                `);
+        educationList.append(eduItem);
+    });
+
+    // Populate the Skills tab
+    const skillsList = $('#person-skills');
+    skillsList.empty();
+    person.skills.forEach(skill => {
+        const skillItem = $(`
+                    <div class="skill-item">
+                        <div class="skill-name">${skill}</div>
+                    </div>
+                `);
+        skillsList.append(skillItem);
+    });
+
+    // Populate the Experience tab
+    const experienceList = $('#person-experience');
+    experienceList.empty();
+    person.experience.forEach(exp => {
+        const expItem = $(`
+                    <div class="experience-item">
+                        <div class="exp-position">${exp.position}</div>
+                        <div class="exp-company">${exp.company}</div>
+                        <div class="exp-period">${exp.period}</div>
+                        <div class="exp-description">${exp.description}</div>
+                    </div>
+                `);
+        experienceList.append(expItem);
+    });
+}
+
+$(document).ready(function () {
+    // Add double-click handler for My Network desktop icon
+    $("#my-network").on("dblclick", function () {
+        // Reset My Network content to default when opening
+        $('#my-network-window .content-items').empty();
+        $('#my-network-window .content-items').append(`
+            <div class="Folder person-folder" data-person="ahmed-mohamed-ahmed">
+                <img src="/static/Icons/person.ico">
+                <span>Ahmed Mohamed Ahmed</span>
+            </div>
+            <div class="Folder person-folder" data-person="ahmed-mohamed-nasr">
+                <img src="/static/Icons/person.ico">
+                <span>Ahmed Mohamed Nasr</span>
+            </div>
+            <div class="Folder person-folder" data-person="abdelhady">
+                <img src="/static/Icons/person.ico">
+                <span>Abdelhady Mohamed</span>
+            </div>
+        `);
+
+        // Re-attach the click handlers for person folders
+        $('.person-folder').on('dblclick', function () {
+            const personId = $(this).data('person');
+            showPersonPropertiesDialog(personId);
+        });
+
+        openWindow($("#my-network-window"), "My Network");
+    });
+
+
+    // Add double-click handler for person folders
+    $('.person-folder').on('dblclick', function () {
+        const personId = $(this).data('person');
+        showPersonPropertiesDialog(personId);
+    });
+
+    // Handle person properties dialog buttons
+    $('#person-properties-dialog .xp-button').on('click', function () {
+        const buttonText = $(this).text();
+        if (buttonText === 'OK' || buttonText === 'Cancel') {
+            $('#person-properties-dialog').hide();
+            removeFromTaskbar("person-properties-dialog");
+        }
+    });
+
+    // Handle tab switching for person properties dialog
+    $('#person-properties-dialog .tab').on('click', function () {
+        const tabId = $(this).data('tab');
+
+        // Update active tab
+        $('#person-properties-dialog .tab').removeClass('active');
+        $(this).addClass('active');
+
+        // Update active tab pane
+        $('#person-properties-dialog .tab-pane').removeClass('active');
+        $(`#person-properties-dialog #${tabId}-tab`).addClass('active');
+    });
+});
+
+
+// Minesweeper Game Implementation
+class Minesweeper {
+    constructor() {
+        this.setDifficulty('beginner');
+        this.board = [];
+        this.revealed = [];
+        this.flagged = [];
+        this.gameOver = false;
+        this.gameWon = false;
+        this.firstClick = true;
+        this.timer = 0;
+        this.timerInterval = null;
+        this.flagCount = 0;
+    }
+
+    setDifficulty(difficulty) {
+        switch (difficulty) {
+            case 'beginner':
+                this.rows = 9;
+                this.cols = 9;
+                this.mines = 10;
+                break;
+            case 'intermediate':
+                this.rows = 16;
+                this.cols = 16;
+                this.mines = 40;
+                break;
+            case 'expert':
+                this.rows = 16;
+                this.cols = 30;
+                this.mines = 99;
+                break;
+            default:
+                this.rows = 9;
+                this.cols = 9;
+                this.mines = 10;
+        }
+        this.difficulty = difficulty;
+    }
+
+    init() {
+        this.board = [];
+        this.revealed = [];
+        this.flagged = [];
+        this.gameOver = false;
+        this.gameWon = false;
+        this.firstClick = true;
+        this.timer = 0;
+        this.flagCount = 0;
+
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+
+        // Initialize empty board
+        for (let i = 0; i < this.rows; i++) {
+            this.board[i] = [];
+            this.revealed[i] = [];
+            this.flagged[i] = [];
+            for (let j = 0; j < this.cols; j++) {
+                this.board[i][j] = 0;
+                this.revealed[i][j] = false;
+                this.flagged[i][j] = false;
+            }
+        }
+
+        this.updateDisplay();
+    }
+
+    placeMines(excludeRow, excludeCol) {
+        let minesPlaced = 0;
+        while (minesPlaced < this.mines) {
+            const row = Math.floor(Math.random() * this.rows);
+            const col = Math.floor(Math.random() * this.cols);
+
+            // Don't place mine on first click or adjacent cells
+            if (Math.abs(row - excludeRow) <= 1 && Math.abs(col - excludeCol) <= 1) {
+                continue;
+            }
+
+            if (this.board[row][col] !== -1) {
+                this.board[row][col] = -1;
+                minesPlaced++;
+            }
+        }
+
+        // Calculate numbers
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (this.board[i][j] !== -1) {
+                    this.board[i][j] = this.countAdjacentMines(i, j);
+                }
+            }
+        }
+    }
+
+    countAdjacentMines(row, col) {
+        let count = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                const newRow = row + i;
+                const newCol = col + j;
+                if (newRow >= 0 && newRow < this.rows &&
+                    newCol >= 0 && newCol < this.cols &&
+                    this.board[newRow][newCol] === -1) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    reveal(row, col) {
+        if (this.gameOver || this.gameWon) return;
+        if (this.revealed[row][col] || this.flagged[row][col]) return;
+
+        // First click - place mines
+        if (this.firstClick) {
+            this.placeMines(row, col);
+            this.firstClick = false;
+            this.startTimer();
+        }
+
+        this.revealed[row][col] = true;
+
+        // Hit a mine
+        if (this.board[row][col] === -1) {
+            this.gameOver = true;
+            this.stopTimer();
+            this.revealAllMines();
+            this.updateSmiley('dead');
+            return;
+        }
+
+        // Empty cell - reveal adjacent cells
+        if (this.board[row][col] === 0) {
+            for (let i = -1; i <= 1; i++) {
+                for (let j = -1; j <= 1; j++) {
+                    const newRow = row + i;
+                    const newCol = col + j;
+                    if (newRow >= 0 && newRow < this.rows &&
+                        newCol >= 0 && newCol < this.cols) {
+                        this.reveal(newRow, newCol);
+                    }
+                }
+            }
+        }
+
+        this.updateDisplay();
+        this.checkWin();
+    }
+
+    toggleFlag(row, col) {
+        if (this.gameOver || this.gameWon) return;
+        if (this.revealed[row][col]) return;
+
+        this.flagged[row][col] = !this.flagged[row][col];
+        this.flagCount += this.flagged[row][col] ? 1 : -1;
+        this.updateDisplay();
+    }
+
+    revealAllMines() {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (this.board[i][j] === -1) {
+                    this.revealed[i][j] = true;
+                }
+            }
+        }
+        this.updateDisplay();
+    }
+
+    checkWin() {
+        let revealedCount = 0;
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                if (this.revealed[i][j]) revealedCount++;
+            }
+        }
+
+        if (revealedCount === this.rows * this.cols - this.mines) {
+            this.gameWon = true;
+            this.gameOver = true;
+            this.stopTimer();
+            this.updateSmiley('win');
+        }
+    }
+
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            this.timer++;
+            if (this.timer > 999) this.timer = 999;
+            this.updateTimerDisplay();
+        }, 1000);
+    }
+
+    stopTimer() {
+        if (this.timerInterval) {
+            clearInterval(this.timerInterval);
+        }
+    }
+
+    updateTimerDisplay() {
+        const timerStr = this.timer.toString().padStart(3, '0');
+        for (let i = 0; i < 3; i++) {
+            const digit = timerStr[i];
+            $(`#timer-digit-${i}`).attr('src', `/static/Minesweeper/digits/digit${digit}.png`);
+        }
+    }
+
+    updateMineCountDisplay() {
+        const mineCount = Math.max(0, this.mines - this.flagCount);
+        const countStr = mineCount.toString().padStart(3, '0');
+        for (let i = 0; i < 3; i++) {
+            const digit = countStr[i];
+            $(`#mine-digit-${i}`).attr('src', `/static/Minesweeper/digits/digit${digit}.png`);
+        }
+    }
+
+    updateSmiley(state) {
+        $('#smiley-face').attr('src', `/static/Minesweeper/smily/${state}.png`);
+    }
+
+    updateDisplay() {
+        for (let i = 0; i < this.rows; i++) {
+            for (let j = 0; j < this.cols; j++) {
+                const cell = $(`#cell-${i}-${j}`);
+
+                if (this.flagged[i][j]) {
+                    cell.html(`<img src="/static/Minesweeper/Tiles/TileFlag.png">`);
+                } else if (this.revealed[i][j]) {
+                    if (this.board[i][j] === -1) {
+                        const imgSrc = (this.gameOver && !this.gameWon) ?
+                            '/static/Minesweeper/Tiles/TileExploded.png' :
+                            '/static/Minesweeper/Tiles/TileMine.png';
+                        cell.html(`<img src="${imgSrc}">`);
+                    } else if (this.board[i][j] === 0) {
+                        cell.html(`<img src="/static/Minesweeper/Tiles/TileEmpty.png">`);
+                    } else {
+                        cell.html(`<img src="/static/Minesweeper/Tiles/Tile${this.board[i][j]}.png">`);
+                    }
+                } else {
+                    cell.html(`<img src="/static/Minesweeper/Tiles/TileUnknown.png">`);
+                }
+            }
+        }
+        this.updateMineCountDisplay();
+    }
+
+    renderBoard(container) {
+        const gameBoard = $('<div class="minesweeper-board"></div>');
+
+        const tileSize = 18;
+        const boardWidth = this.cols * tileSize;
+        gameBoard.css('width', boardWidth + 5 + 'px');
+
+        for (let i = 0; i < this.rows; i++) {
+            const row = $('<div class="minesweeper-row"></div>');
+            for (let j = 0; j < this.cols; j++) {
+                const cell = $(`<div class="minesweeper-cell" id="cell-${i}-${j}"></div>`);
+                cell.html(`<img src="/static/Minesweeper/Tiles/TileUnknown.png">`);
+
+                cell.on('click', () => this.reveal(i, j));
+                cell.on('contextmenu', (e) => {
+                    e.preventDefault();
+                    this.toggleFlag(i, j);
+                    return false;
+                });
+
+                row.append(cell);
+            }
+            gameBoard.append(row);
+        }
+
+        container.append(gameBoard);
+    }
+
+
+
+    changeDifficulty(difficulty) {
+        this.setDifficulty(difficulty);
+        const container = $('#minesweeper-game-container');
+        container.empty();
+
+        const tileSize = 18;
+        const boardWidth = this.cols * tileSize;
+        const windowWidth = boardWidth + 6 + 60; // +6 for board borders, +60 for padding/margins
+        $('#minesweeper-window').css('width', windowWidth + 'px');
+
+        // Recreate the game
+        const header = $(`
+            <div class="minesweeper-header">
+                <div class="mine-counter">
+                    <img id="mine-digit-0" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                    <img id="mine-digit-1" src="/static/Minesweeper/digits/digit1.png" width="13" height="23">
+                    <img id="mine-digit-2" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                </div>
+                <div class="smiley-container">
+                    <img id="smiley-face" src="/static/Minesweeper/smily/ok.png" width="26" height="26">
+                </div>
+                <div class="timer-display">
+                    <img id="timer-digit-0" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                    <img id="timer-digit-1" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                    <img id="timer-digit-2" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                </div>
+            </div>
+        `);
+
+        container.append(header);
+        this.renderBoard(container);
+        this.init();
+
+        // Re-attach smiley button handler
+        $('#smiley-face').on('click', () => {
+            this.init();
+            this.updateSmiley('ok');
+        });
+    }
+}
+
+// Initialize when minesweeper window is opened
+let minesweeperGame = null;
+
+function initMinesweeper() {
+    const container = $('#minesweeper-game-container');
+    container.empty();
+
+    minesweeperGame = new Minesweeper();
+
+    const tileSize = 18;
+    const boardWidth = minesweeperGame.cols * tileSize;
+    const windowWidth = boardWidth + 6 + 50;
+    $('#minesweeper-window').css('width', windowWidth + 'px');
+
+    // Create header with mine counter, smiley, and timer
+    const header = $(`
+        <div class="minesweeper-header">
+            <div class="mine-counter">
+                <img id="mine-digit-0" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                <img id="mine-digit-1" src="/static/Minesweeper/digits/digit1.png" width="13" height="23">
+                <img id="mine-digit-2" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+            </div>
+            <div class="smiley-container">
+                <img id="smiley-face" src="/static/Minesweeper/smily/ok.png" width="26" height="26">
+            </div>
+            <div class="timer-display">
+                <img id="timer-digit-0" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                <img id="timer-digit-1" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+                <img id="timer-digit-2" src="/static/Minesweeper/digits/digit0.png" width="13" height="23">
+            </div>
+        </div>
+    `);
+
+    container.append(header);
+
+    minesweeperGame.renderBoard(container);
+    minesweeperGame.init();
+
+    // Smiley button - restart game
+    $('#smiley-face').on('click', () => {
+        minesweeperGame.init();
+        minesweeperGame.updateSmiley('ok');
+    });
+}
+
+// Add to document ready
+$(document).ready(function () {
+    // Handle minesweeper icon double click
+    $('#minesweeper-icon').on('dblclick', function () {
+        openWindow($('#minesweeper-window'), 'Minesweeper');
+
+        // Initialize game if not already initialized
+        if (!minesweeperGame) {
+            initMinesweeper();
+        }
+    });
+
+    // Handle Game menu click
+    $('#game-menu').on('click', function (e) {
+        e.stopPropagation();
+        const dropdown = $('#game-dropdown');
+        dropdown.toggleClass('show');
+    });
+
+    // Handle Help menu click
+    $('#help-menu').on('click', function () {
+        openWindow($('#minesweeper-help-window'), 'Minesweeper Help');
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function () {
+        $('.dropdown-menu').removeClass('show');
+    });
+
+    // Handle dropdown menu items
+    $('.menu-item[data-action="new"]').on('click', function () {
+        if (minesweeperGame) {
+            minesweeperGame.init();
+            minesweeperGame.updateSmiley('ok');
+        }
+        $('.dropdown-menu').removeClass('show');
+    });
+
+    $('.menu-item[data-difficulty]').on('click', function () {
+        const difficulty = $(this).data('difficulty');
+        if (minesweeperGame) {
+            minesweeperGame.changeDifficulty(difficulty);
+        }
+        $('.dropdown-menu').removeClass('show');
+    });
+
+    $('.menu-item[data-action="exit"]').on('click', function () {
+        $('#minesweeper-window').hide();
+        removeFromTaskbar('minesweeper-window');
+        $('.dropdown-menu').removeClass('show');
+    });
+
+    // Handle help window close button
+    $('.help-close-btn').on('click', function () {
+        $('#minesweeper-help-window').hide();
+        removeFromTaskbar('minesweeper-help-window');
+    });
+
+    // Make help window interactive
+    makeWindowInteractive($('#minesweeper-help-window'));
 });
