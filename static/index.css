@@ -1185,3 +1185,290 @@ body {
     border: 1px solid #c0c0c0;
     background-color: white;
 }
+
+/* Person Properties Dialog Styles */
+.education-item, .experience-item {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.edu-degree, .exp-position {
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 3px;
+}
+
+.edu-institution, .exp-company {
+    font-style: italic;
+    font-size: 11px;
+    margin-bottom: 3px;
+}
+
+.edu-year, .exp-period {
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.exp-description {
+    font-size: 11px;
+    margin-top: 5px;
+}
+
+.skill-item {
+    display: inline-block;
+    background-color: #e0e0e0;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    padding: 5px 10px;
+    margin: 5px;
+    font-size: 11px;
+}
+
+.skill-name {
+    font-weight: normal;
+}
+
+#person-properties-dialog .tab-content {
+    height: 350px;
+    overflow-y: auto;
+}
+
+#person-properties-dialog .tab-pane {
+    padding: 10px;
+}
+
+#person-properties-dialog .properties-info {
+    margin-top: 10px;
+}
+
+#person-properties-dialog .info-row {
+    margin-bottom: 8px;
+}
+
+#person-properties-dialog .info-label {
+    font-weight: bold;
+    width: 80px;
+    display: inline-block;
+}
+
+#person-properties-dialog .info-value {
+    display: inline-block;
+}
+
+/* Minesweeper Game Styles */
+#minesweeper-window {
+    width: 250px;
+    height: auto;
+    min-width: 200px;
+}
+
+#minesweeper-window .window-body {
+    padding: 3px;
+    margin: 0;
+    overflow: hidden;
+}
+
+#minesweeper-game-container {
+    padding: 0;
+    background-color: #c0c0c0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.minesweeper-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 8px;
+    margin-bottom: 5px;
+    margin-top: 3px;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    background-color: #c0c0c0;
+    border: 3px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    box-sizing: border-box;
+}
+
+.mine-counter,
+.timer-display {
+    display: flex;
+    align-items: center;
+    background-color: #000000;
+    padding: 2px 4px;
+    border: 2px inset;
+    border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.mine-counter img,
+.timer-display img {
+    image-rendering: pixelated;
+    display: block;
+}
+
+.smiley-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    background-color: #c0c0c0;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    cursor: pointer;
+}
+
+.smiley-container:active {
+    border-color: #808080 #ffffff #ffffff #808080;
+}
+
+.smiley-container img {
+    image-rendering: pixelated;
+    display: block;
+}
+
+.minesweeper-board {
+    border: 3px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background-color: #c0c0c0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3px;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.minesweeper-row {
+    display: flex;
+}
+
+.minesweeper-cell {
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+}
+
+.minesweeper-cell img {
+    display: block;
+    image-rendering: pixelated;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Adjust window body for minesweeper */
+#minesweeper-window .window-body menu[role="menubar"] {
+    margin-left: -3px;
+    margin-right: -3px;
+    margin-top: -3px;
+}
+
+#minesweeper-window .resize-handle {
+    display: none;
+}
+
+/* Dropdown Menu Styles */
+#minesweeper-window menu[role="menubar"] li {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: #EBEBDB;
+    border: 1px solid #999;
+    color: black;
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    min-width: 150px;
+    padding: 2px;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.menu-item {
+    padding: 5px 20px 5px 5px;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.menu-item:hover {
+    background-color: #316ac5;
+    color: white;
+}
+
+.menu-separator {
+    height: 1px;
+    background-color: #999;
+    margin: 2px 0;
+}
+
+/* Help Window Styles */
+#minesweeper-help-window .help-content {
+    padding: 15px;
+    overflow-y: auto;
+    height: calc(100% - 50px);
+    font-family: 'Tahoma', sans-serif;
+    font-size: 11px;
+}
+
+#minesweeper-help-window h2 {
+    font-size: 14px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #000;
+    border-bottom: 2px solid #3a6ea5;
+    padding-bottom: 5px;
+}
+
+#minesweeper-help-window h3 {
+    font-size: 12px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    color: #000;
+}
+
+.help-section {
+    margin-bottom: 15px;
+}
+
+.help-section ul {
+    margin: 5px 0;
+    padding-left: 20px;
+}
+
+.help-section li {
+    margin-bottom: 5px;
+    line-height: 1.4;
+}
+
+.help-section p {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+#minesweeper-help-window .dialog-buttons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
