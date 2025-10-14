@@ -646,43 +646,71 @@ $(document).ready(function () {
     }
 
     // Function to format analysis data for display
-    function formatAnalysisData(data) {
-        let text = "Information Theory and Coding Analysis Results\n";
-        text += "=============================================\n\n";
+    // Function to format analysis data for display
+function formatAnalysisData(data) {
+    let text = "Information Theory and Coding Analysis Results\n";
+    text += "=============================================\n\n";
 
-        text += "Entropy Measurements:\n";
-        text += "---------------------\n";
-        text += `Entropy: ${data.entropy.toFixed(4)} bits per character\n`;
-        text += `Relative Entropy: ${data.relative_entropy.toFixed(4)} bits\n`;
-        text += `Joint Entropy: ${data.joint_entropy.toFixed(4)} bits\n`;
-        text += `Conditional Entropy: ${data.conditional_entropy.toFixed(4)} bits\n\n`;
+    text += "1. Probability Mass Function (PMF):\n";
+    text += "-----------------------------------\n";
+    
+    // Sort characters by probability
+    const sortedPMF = Object.entries(data.pmf).sort((a, b) => b[1] - a[1]);
+    
+    sortedPMF.forEach(([char, prob]) => {
+        const displayChar = char === ' ' ? 'Space' : char;
+        text += `${displayChar}: ${prob.toFixed(6)}\n`;
+    });
+    
+    text += "\n2. Entropy Measurements:\n";
+    text += "------------------------\n";
+    text += `Entropy H(X): ${data.entropy.toFixed(4)} bits per character\n`;
+    text += `Relative Entropy: ${data.relative_entropy.toFixed(4)} bits\n`;
+    text += `Joint Entropy H(X,Y): ${data.joint_entropy.toFixed(4)} bits\n`;
+    text += `Conditional Entropy H(Y|X): ${data.conditional_entropy.toFixed(4)} bits\n\n`;
 
-        text += "Chain Rule Verification:\n";
-        text += "------------------------\n";
-        text += `H(X,Y) = H(X) + H(Y|X): ${data.verification ? 'Verified' : 'Not verified'}\n\n`;
+    text += "3. Chain Rule Verification:\n";
+    text += "---------------------------\n";
+    text += `H(X,Y) = H(X) + H(Y|X)\n`;
+    text += `${data.joint_entropy.toFixed(4)} = ${data.entropy.toFixed(4)} + ${data.conditional_entropy.toFixed(4)}\n`;
+    text += `${data.joint_entropy.toFixed(4)} = ${(data.entropy + data.conditional_entropy).toFixed(4)}\n`;
+    text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n\n`;
 
-        text += "Text Analysis:\n";
-        text += "--------------\n";
-        text += `Original Text Length: ${data.original_length} characters\n`;
-        text += `Decoded Text Length: ${data.decoded_length} characters\n\n`;
+    text += "4. Text Analysis:\n";
+    text += "-----------------\n";
+    text += `Original Text (X) Length: ${data.original_length} characters\n`;
+    text += `Encoded Bits (X coded) Length: ${data.encoded_length} bits\n`;
+    text += `Decoded Text (Y) Length: ${data.decoded_length} characters\n`;
+    text += `Number of Bit Errors: ${data.num_errors}\n`;
+    text += `Error Rate: ${data.error_rate.toFixed(2)}%\n\n`;
 
-        text += "Decoded Text Sample:\n";
-        text += "--------------------\n";
-        text += data.decoded_text + "\n\n";
+    text += "5. Original Text (X):\n";
+    text += "--------------------\n";
+    text += data.original_text + "\n\n";
 
-        text += "Probability Mass Function:\n";
-        text += "--------------------------\n";
+    text += "6. Encoded Bits (X coded):\n";
+    text += "-------------------------\n";
+    text += data.encoded_bits + "\n\n";
 
-        // Sort characters by probability
-        const sortedPMF = Object.entries(data.pmf).sort((a, b) => b[1] - a[1]);
+    text += "7. Decoded Text (Y):\n";
+    text += "-------------------\n";
+    text += data.decoded_text + "\n\n";
 
-        sortedPMF.forEach(([char, prob]) => {
-            const displayChar = char === ' ' ? 'Space' : char;
-            text += `${displayChar}: ${prob.toFixed(6)}\n`;
-        });
+    text += "8. Channel Analysis:\n";
+    text += "--------------------\n";
+    text += `Channel Type: Binary Symmetric Channel\n`;
+    text += `Error Probability: 0.05 (5%)\n`;
+    text += `Bits per Character: 6\n\n`;
 
-        return text;
-    }
+    text += "9. Verification Details:\n";
+    text += "------------------------\n";
+    text += `Left Side (H(X,Y)): ${data.chain_rule_lhs.toFixed(6)} bits\n`;
+    text += `Right Side (H(X) + H(Y|X)): ${data.chain_rule_rhs.toFixed(6)} bits\n`;
+    text += `Difference: ${Math.abs(data.chain_rule_lhs - data.chain_rule_rhs).toFixed(6)} bits\n`;
+    text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n`;
+
+    return text;
+}
 
     // Function to draw the PMF chart on canvas
     function drawPMFChart(pmf) {
