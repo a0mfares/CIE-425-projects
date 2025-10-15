@@ -41,7 +41,7 @@ def analyze_text():
         text = file.read().decode('utf-8')
 
         # Extract valid characters
-        valid_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ,.0123456789')
+        valid_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ,.123456789')
         characters = [char for char in text if char in valid_chars]
 
         if not characters:
