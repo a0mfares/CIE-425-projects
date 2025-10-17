@@ -120,9 +120,24 @@ def analyze_text():
             conditional_entropy = bits_per_char * h_p
         else:
             conditional_entropy = 0
-
-        # Calculate joint entropy H(X,Y) = H(X) + H(Y|X)
-        joint_entropy = entropy + conditional_entropy
+        # Calculating Joint Entropy
+        # H(x,y) = -SUM(p(x,y) * log2(p(x,y)
+        joint_counts = defaultdict(int)
+        min_length = min(len(original_text), len(decoded_text))
+        
+        for i in range(min_length):
+            original_char = original_text[i]
+            decoded_char = decoded_text[i]
+            joint_counts[(original_char, decoded_char)] += 1
+        
+        # Calculate joint probability distribution
+        joint_pmf = {pair: count/min_length for pair, count in joint_counts.items()}
+        
+        # Calculate joint entropy H(X,Y) using the original formula
+        joint_entropy = 0
+        for pair, prob in joint_pmf.items():
+            if prob > 0:
+                joint_entropy -= prob * math.log2(prob)
         
         total_characters = len(characters)
         correctly_decoded = sum(1 for i in range(min(len(original_text), len(decoded_text)))
