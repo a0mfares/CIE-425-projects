@@ -647,70 +647,70 @@ $(document).ready(function () {
 
     // Function to format analysis data for display
     // Function to format analysis data for display
-function formatAnalysisData(data) {
-    let text = "Information Theory and Coding Analysis Results\n";
-    text += "=============================================\n\n";
+    function formatAnalysisData(data) {
+        let text = "Information Theory and Coding Analysis Results\n";
+        text += "=============================================\n\n";
 
-    text += "1. Probability Mass Function (PMF):\n";
-    text += "-----------------------------------\n";
-    
-    // Sort characters by probability
-    const sortedPMF = Object.entries(data.pmf).sort((a, b) => b[1] - a[1]);
-    
-    sortedPMF.forEach(([char, prob]) => {
-        const displayChar = char === ' ' ? 'Space' : char;
-        text += `${displayChar}: ${prob.toFixed(6)}\n`;
-    });
-    
-    text += "\n2. Entropy Measurements:\n";
-    text += "------------------------\n";
-    text += `Entropy H(X): ${data.entropy.toFixed(4)} bits per character\n`;
-    text += `Relative Entropy: ${data.relative_entropy.toFixed(4)} bits\n`;
-    text += `Joint Entropy H(X,Y): ${data.joint_entropy.toFixed(4)} bits\n`;
-    text += `Conditional Entropy H(Y|X): ${data.conditional_entropy.toFixed(4)} bits\n\n`;
+        text += "1. Probability Mass Function (PMF):\n";
+        text += "-----------------------------------\n";
 
-    text += "3. Chain Rule Verification:\n";
-    text += "---------------------------\n";
-    text += `H(X,Y) = H(X) + H(Y|X)\n`;
-    text += `${data.joint_entropy.toFixed(4)} = ${data.entropy.toFixed(4)} + ${data.conditional_entropy.toFixed(4)}\n`;
-    text += `${data.joint_entropy.toFixed(4)} = ${(data.entropy + data.conditional_entropy).toFixed(4)}\n`;
-    text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n\n`;
+        // Sort characters by probability
+        const sortedPMF = Object.entries(data.pmf).sort((a, b) => b[1] - a[1]);
 
-    text += "4. Text Analysis:\n";
-    text += "-----------------\n";
-    text += `Original Text (X) Length: ${data.original_length} characters\n`;
-    text += `Encoded Bits (X coded) Length: ${data.encoded_length} bits\n`;
-    text += `Decoded Text (Y) Length: ${data.decoded_length} characters\n`;
-    text += `Number of Bit Errors: ${data.num_errors}\n`;
-    text += `Error Rate: ${data.error_rate.toFixed(2)}%\n\n`;
+        sortedPMF.forEach(([char, prob]) => {
+            const displayChar = char === ' ' ? 'Space' : char;
+            text += `${displayChar}: ${prob.toFixed(6)}\n`;
+        });
 
-    text += "5. Original Text (X):\n";
-    text += "--------------------\n";
-    text += data.original_text + "\n\n";
+        text += "\n2. Entropy Measurements:\n";
+        text += "------------------------\n";
+        text += `Entropy H(X): ${data.entropy.toFixed(4)} bits per character\n`;
+        text += `Relative Entropy: ${data.relative_entropy.toFixed(4)} bits\n`;
+        text += `Joint Entropy H(X,Y): ${data.joint_entropy.toFixed(4)} bits\n`;
+        text += `Conditional Entropy H(Y|X): ${data.conditional_entropy.toFixed(4)} bits\n\n`;
 
-    text += "6. Encoded Bits (X coded):\n";
-    text += "-------------------------\n";
-    text += data.encoded_bits + "\n\n";
+        text += "3. Chain Rule Verification:\n";
+        text += "---------------------------\n";
+        text += `H(X,Y) = H(X) + H(Y|X)\n`;
+        text += `${data.joint_entropy.toFixed(4)} = ${data.entropy.toFixed(4)} + ${data.conditional_entropy.toFixed(4)}\n`;
+        text += `${data.joint_entropy.toFixed(4)} = ${(data.entropy + data.conditional_entropy).toFixed(4)}\n`;
+        text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n\n`;
 
-    text += "7. Decoded Text (Y):\n";
-    text += "-------------------\n";
-    text += data.decoded_text + "\n\n";
+        text += "4. Text Analysis:\n";
+        text += "-----------------\n";
+        text += `Original Text (X) Length: ${data.original_length} characters\n`;
+        text += `Encoded Bits (X coded) Length: ${data.encoded_length} bits\n`;
+        text += `Decoded Text (Y) Length: ${data.decoded_length} characters\n`;
+        text += `Number of Bit Errors: ${data.num_errors}\n`;
+        text += `Error Rate: ${data.error_rate.toFixed(2)}%\n\n`;
 
-    text += "8. Channel Analysis:\n";
-    text += "--------------------\n";
-    text += `Channel Type: Binary Symmetric Channel\n`;
-    text += `Error Probability: 0.05 (5%)\n`;
-    text += `Bits per Character: 6\n\n`;
+        text += "5. Original Text (X):\n";
+        text += "--------------------\n";
+        text += data.original_text + "\n\n";
 
-    text += "9. Verification Details:\n";
-    text += "------------------------\n";
-    text += `Left Side (H(X,Y)): ${data.chain_rule_lhs.toFixed(6)} bits\n`;
-    text += `Right Side (H(X) + H(Y|X)): ${data.chain_rule_rhs.toFixed(6)} bits\n`;
-    text += `Difference: ${Math.abs(data.chain_rule_lhs - data.chain_rule_rhs).toFixed(6)} bits\n`;
-    text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n`;
+        text += "6. Encoded Bits (X coded):\n";
+        text += "-------------------------\n";
+        text += data.encoded_bits + "\n\n";
 
-    return text;
-}
+        text += "7. Decoded Text (Y):\n";
+        text += "-------------------\n";
+        text += data.decoded_text + "\n\n";
+
+        text += "8. Channel Analysis:\n";
+        text += "--------------------\n";
+        text += `Channel Type: Binary Symmetric Channel\n`;
+        text += `Error Probability: 0.05 (5%)\n`;
+        text += `Bits per Character: 6\n\n`;
+
+        text += "9. Verification Details:\n";
+        text += "------------------------\n";
+        text += `Left Side (H(X,Y)): ${data.chain_rule_lhs.toFixed(6)} bits\n`;
+        text += `Right Side (H(X) + H(Y|X)): ${data.chain_rule_rhs.toFixed(6)} bits\n`;
+        text += `Difference: ${Math.abs(data.chain_rule_lhs - data.chain_rule_rhs).toFixed(6)} bits\n`;
+        text += `Verification: ${data.verification ? 'VERIFIED ✓' : 'NOT VERIFIED ✗'}\n`;
+
+        return text;
+    }
 
     // Function to draw the PMF chart on canvas
     function drawPMFChart(pmf) {
@@ -1682,4 +1682,389 @@ $(document).ready(function () {
 
     // Make help window interactive
     makeWindowInteractive($('#minesweeper-help-window'));
+});
+
+$(document).ready(function () {
+    // Update the My Computer window content to include Project 2
+    $("#computer-icon").on("dblclick", function () {
+        // Reset My Computer content to default when opening
+        $('#my-computer-window .content-items').empty();
+        $('.section-title').show();
+
+        $('#my-computer-window .content-items').append(`
+            <div class="Folder" data-project="project1">
+                <img src="/static/Icons/HardDrive.ico">
+                <span>Project 1</span>
+            </div>
+            <div class="Folder" data-project="project2">
+                <img src="/static/Icons/HardDrive.ico">
+                <span>Project 2</span>
+            </div>
+        `);
+
+        // Re-attach the click handlers for both projects
+        $('.Folder[data-project]').on('click', function (e) {
+            $('.Folder').removeClass('selected');
+            $(this).addClass('selected');
+        });
+
+        $('.Folder[data-project]').on('dblclick', function () {
+            const projectName = $(this).data('project');
+            if (projectName === 'project1') {
+                showUploadDialog('project1');
+            } else if (projectName === 'project2') {
+                showProject2Menu();
+            }
+        });
+
+        openWindow($("#my-computer-window"), "My Computer");
+    });
+
+    // Function to show Project 2 selection menu
+    function showProject2Menu() {
+        const windowWidth = $(window).width();
+        const windowHeight = $(window).height();
+        const dialogWidth = 500;
+        const dialogHeight = 350;
+
+        const left = (windowWidth - dialogWidth) / 2;
+        const top = (windowHeight - dialogHeight) / 2;
+
+        // Create Project 2 menu dialog if it doesn't exist
+        if ($('#project2-menu-dialog').length === 0) {
+            const menuDialog = $(`
+                <div id="project2-menu-dialog" class="window"
+                    style="display: none; width: 500px; height: 350px; position: absolute; z-index: 100;">
+                    <div class="title-bar">
+                        <img src="/static/Icons/HardDrive.ico" width="20px">
+                        <div class="title-bar-text">Project 2 - Source Coding Analysis</div>
+                        <div class="title-bar-controls">
+                            <button aria-label="Minimize"></button>
+                            <button aria-label="Maximize"></button>
+                            <button aria-label="Close"></button>
+                        </div>
+                    </div>
+                    <div class="window-body">
+                        <div style="padding: 20px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                            <h3 style="margin-top: 0;">Select Analysis Type:</h3>
+                            
+                            <div class="Folder analysis-option" data-type="part1" style="margin: 15px 0; padding: 10px; cursor: pointer; border: 1px solid #c0c0c0;">
+                                <img src="/static/Icons/text.ico" width="32" height="32" style="vertical-align: middle; margin-right: 10px;">
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <strong>Part 1: Uniform Distribution (M=4,6,8)</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Compare Fixed-length vs Huffman coding with uniform probabilities</span>
+                                </div>
+                            </div>
+
+                            <div class="Folder analysis-option" data-type="part2" style="margin: 15px 0; padding: 10px; cursor: pointer; border: 1px solid #c0c0c0;">
+                                <img src="/static/Icons/text.ico" width="32" height="32" style="vertical-align: middle; margin-right: 10px;">
+                                <div style="display: inline-block; vertical-align: middle;">
+                                    <strong>Part 2 & 4: Custom Text Analysis</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze real text with Huffman and Shannon-Fano coding</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 30px; padding: 10px; background-color: #f0f0f0; border: 1px solid #c0c0c0;">
+                                <strong>Note:</strong> Both analyses will upload and process your text file to demonstrate source coding techniques.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resize-handle"></div>
+                </div>
+            `);
+
+            $('body').append(menuDialog);
+            makeWindowInteractive(menuDialog);
+
+            // Handle analysis option selection
+            $('.analysis-option').on('click', function () {
+                $('.analysis-option').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
+            $('.analysis-option').on('dblclick', function () {
+                const analysisType = $(this).data('type');
+                $('#project2-menu-dialog').hide();
+                removeFromTaskbar('project2-menu-dialog');
+                showUploadDialog(analysisType);
+            });
+
+            // Handle close button
+            $('#project2-menu-dialog .title-bar-controls button[aria-label="Close"]').on('click', function () {
+                $('#project2-menu-dialog').hide();
+                removeFromTaskbar('project2-menu-dialog');
+            });
+        }
+
+        $('#project2-menu-dialog').css({
+            left: left + "px",
+            top: top + "px"
+        }).show();
+
+        addToTaskbar($("#project2-menu-dialog"), "Project 2 Menu");
+        bringToFront($("#project2-menu-dialog"));
+    }
+
+    // Update the showUploadDialog function to handle both projects
+    function showUploadDialog(projectType) {
+        const windowWidth = $(window).width();
+        const windowHeight = $(window).height();
+        const dialogWidth = 400;
+        const dialogHeight = 200;
+
+        const left = (windowWidth - dialogWidth) / 2;
+        const top = (windowHeight - dialogHeight) / 2;
+
+        // Store project type
+        $('#upload-dialog').data('project-type', projectType);
+
+        // Update dialog title based on project
+        let title = 'Upload File';
+        if (projectType === 'project1') {
+            title = 'Upload File - Project 1';
+        } else if (projectType === 'part1') {
+            title = 'Upload File - Project 2 Part 1';
+        } else if (projectType === 'part2') {
+            title = 'Upload File - Project 2 Part 2/4';
+        }
+        $('#upload-dialog .title-bar-text').text(title);
+
+        // Reset dialog state
+        $('#upload-dialog #file-name').text('No file selected');
+        $('#upload-dialog #file-input').val('');
+        $('#upload-dialog #upload-button').text('Upload').prop('disabled', true);
+        $('#upload-dialog .upload-progress').hide();
+
+        // Set position and show the dialog
+        $('#upload-dialog').css({
+            left: left + "px",
+            top: top + "px"
+        }).show();
+
+        addToTaskbar($("#upload-dialog"), title);
+        bringToFront($("#upload-dialog"));
+    }
+
+    // Update the upload button click handler
+    $('#upload-button').on('click', function () {
+        const buttonText = $(this).text();
+        const projectType = $('#upload-dialog').data('project-type');
+
+        if (buttonText === 'Upload') {
+            const fileName = $('#file-name').text();
+            if (fileName !== 'No file selected') {
+                // Show progress animation
+                $('.upload-progress').show();
+                $(this).prop('disabled', true);
+
+                // Reset all boxes to hidden
+                $('.progress-box').removeClass('visible');
+
+                // Show boxes one by one
+                let currentBox = 0;
+                const totalBoxes = $('.progress-box').length;
+                const intervalTime = 150;
+
+                const showNextBox = setInterval(function () {
+                    if (currentBox < totalBoxes) {
+                        $('.progress-box').eq(currentBox).addClass('visible');
+                        currentBox++;
+                    } else {
+                        clearInterval(showNextBox);
+
+                        setTimeout(function () {
+                            $('.upload-progress').hide();
+                            $('#upload-button').text('Analyze').prop('disabled', false);
+                            $('.upload-message p').text(`File "${fileName}" uploaded successfully! Click "Analyze" to process the file.`);
+                        }, 500);
+                    }
+                }, intervalTime);
+            }
+        } else if (buttonText === 'Analyze') {
+            // Show analysis progress
+            $('.upload-progress').show();
+            $('.upload-message p').text('Analyzing file...');
+            $(this).prop('disabled', true);
+
+            // Create FormData to send the file
+            const formData = new FormData();
+            const fileInput = document.getElementById('file-input');
+            formData.append('file', fileInput.files[0]);
+
+            // Determine which endpoint to use
+            let endpoint = '/analyze';
+            if (projectType === 'part1') {
+                endpoint = '/analyze_project2';
+            } else if (projectType === 'part2') {
+                endpoint = '/analyze_project2_custom';
+            }
+
+            // Send the file to Flask app
+            $.ajax({
+                url: endpoint,
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    $('.upload-progress').hide();
+                    $('#upload-dialog').hide();
+                    removeFromTaskbar("upload-dialog");
+
+                    // Handle different project types
+                    if (projectType === 'project1') {
+                        updateFolderContent(response);
+                        setTimeout(function () {
+                            openAnalysisFiles(response);
+                        }, 500);
+                        $('.section-title').hide();
+                    } else if (projectType === 'part1') {
+                        showProject2Part1Results(response);
+                    } else if (projectType === 'part2') {
+                        showProject2Part2Results(response);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('.upload-progress').hide();
+                    $('.upload-message p').text('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                    $('#upload-button').text('Upload').prop('disabled', false);
+                }
+            });
+        }
+    });
+
+    // Function to display Project 2 Part 1 results
+    function showProject2Part1Results(data) {
+        let resultsText = "Source Coding Analysis - Part 1: Uniform Distributions\n";
+        resultsText += "==========================================================\n\n";
+
+        for (let key in data) {
+            const result = data[key];
+            resultsText += `Case M = ${result.M}\n`;
+            resultsText += "─".repeat(60) + "\n";
+            resultsText += `Entropy H(X) = ${result.entropy} bits/symbol\n\n`;
+
+            resultsText += "Fixed-length codes:\n";
+            for (let sym in result.fixed_codes) {
+                resultsText += `  ${sym}: ${result.fixed_codes[sym]}\n`;
+            }
+            resultsText += `Average fixed length: ${result.avg_fixed} bits\n\n`;
+
+            resultsText += "Huffman codes:\n";
+            for (let sym in result.huffman_codes) {
+                resultsText += `  ${sym}: ${result.huffman_codes[sym]}\n`;
+            }
+            resultsText += `Average Huffman length: ${result.avg_huffman} bits\n\n`;
+
+            resultsText += "Comparison:\n";
+            resultsText += `  Entropy  = ${result.entropy}\n`;
+            resultsText += `  Fixed    = ${result.avg_fixed}\n`;
+            resultsText += `  Huffman  = ${result.avg_huffman}\n`;
+            resultsText += `  Huffman Efficiency = ${result.huffman_efficiency}\n\n`;
+
+            resultsText += `Random sequence (30 symbols):\n${result.sequence}\n\n`;
+
+            resultsText += "Encoded Bitstrings:\n";
+            resultsText += `  Fixed-length: ${result.fixed_encoded}\n`;
+            resultsText += `  Huffman     : ${result.huffman_encoded}\n\n`;
+
+            resultsText += "Total bits required:\n";
+            resultsText += `  Fixed-length: ${result.fixed_bits} bits\n`;
+            resultsText += `  Huffman     : ${result.huffman_bits} bits\n`;
+            resultsText += `  Compression ratio = ${result.compression_ratio}\n\n`;
+
+            resultsText += "Decoding Verification:\n";
+            resultsText += `  Fixed-length lossless: ${result.fixed_lossless ? 'YES ✓' : 'NO ✗'}\n`;
+            resultsText += `  Huffman lossless     : ${result.huffman_lossless ? 'YES ✓' : 'NO ✗'}\n\n`;
+            resultsText += "=".repeat(60) + "\n\n";
+        }
+
+        openProject2ResultWindow(resultsText, "Project 2 Part 1 Results");
+    }
+
+    // Function to display Project 2 Part 2 results
+    function showProject2Part2Results(data) {
+        let resultsText = "Source Coding Analysis - Part 2/4: Real Text Analysis\n";
+        resultsText += "==========================================================\n\n";
+
+        resultsText += "Text Statistics:\n";
+        resultsText += "─".repeat(60) + "\n";
+        resultsText += `Total characters: ${data.text_length}\n`;
+        resultsText += `Unique characters: ${data.unique_chars}\n`;
+        resultsText += `Entropy H(X): ${data.entropy} bits/symbol\n\n`;
+
+        resultsText += "Average Code Lengths:\n";
+        resultsText += "─".repeat(60) + "\n";
+        resultsText += `Fixed-Length: ${data.avg_fixed} bits\n`;
+        resultsText += `Huffman:      ${data.avg_huffman} bits\n`;
+        resultsText += `Shannon-Fano: ${data.avg_fano} bits\n\n`;
+
+        resultsText += "Compression Results:\n";
+        resultsText += "─".repeat(60) + "\n";
+        resultsText += `ASCII (8-bit):    ${data.ascii_size} bits\n`;
+        resultsText += `Fixed-Length:     ${data.fixed_size} bits (${data.fixed_compression}% compression)\n`;
+        resultsText += `Huffman:          ${data.huffman_size} bits (${data.huffman_compression}% compression)\n`;
+        resultsText += `Shannon-Fano:     ${data.fano_size} bits (${data.fano_compression}% compression)\n\n`;
+
+        resultsText += "Efficiency:\n";
+        resultsText += "─".repeat(60) + "\n";
+        resultsText += `Huffman Efficiency:      ${data.huffman_efficiency}%\n`;
+        resultsText += `Shannon-Fano Efficiency: ${data.fano_efficiency}%\n\n`;
+
+        resultsText += "Code Table (Top 20 Most Frequent Characters):\n";
+        resultsText += "─".repeat(60) + "\n";
+        resultsText += "Char | Freq  | Prob    | Fixed    | Huffman     | Fano\n";
+        resultsText += "─".repeat(60) + "\n";
+
+        data.code_table.forEach(row => {
+            const char = row.char.padEnd(4);
+            const freq = row.frequency.toString().padEnd(6);
+            const prob = row.probability.toFixed(6).padEnd(8);
+            const fixed = row.fixed.padEnd(9);
+            const huffman = row.huffman.padEnd(12);
+            const fano = row.fano;
+            resultsText += `${char} | ${freq} | ${prob} | ${fixed} | ${huffman} | ${fano}\n`;
+        });
+
+        resultsText += "\n" + "=".repeat(60) + "\n";
+        resultsText += "Both Huffman and Shannon-Fano are lossless compression methods.\n";
+        resultsText += "Huffman is optimal for prefix-free codes.\n";
+
+        openProject2ResultWindow(resultsText, "Project 2 Part 2/4 Results");
+    }
+
+    // Function to open Project 2 result window
+    function openProject2ResultWindow(text, title) {
+        const textWindow = $(`
+            <div class="window project2-result-window"
+                style="display: none; width: 700px; height: 500px; top: 80px; left: 150px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <img src="/static/Icons/text.ico" width="20px">
+                    <div class="title-bar-text">${title}</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div class="text-content">
+                        <pre>${text}</pre>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(textWindow);
+        makeWindowInteractive(textWindow);
+        openWindow(textWindow, title);
+
+        // Handle close button
+        textWindow.find('.title-bar-controls button[aria-label="Close"]').on('click', function () {
+            textWindow.hide();
+            removeFromTaskbar(textWindow.attr('id'));
+            textWindow.remove();
+        });
+    }
 });
