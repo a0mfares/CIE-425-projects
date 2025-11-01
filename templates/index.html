@@ -159,11 +159,11 @@
                     <div class="content-section">
                         <h2 class="section-title">Hard Disk Drives</h2>
                         <div class="content-items">
-                            <div class="Folder">
+                            <div class="Folder" id="project1-folder">
                                 <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}">
                                 <span>Project 1</span>
                             </div>
-                            <div class="Folder">
+                            <div class="Folder" id="project2-folder">
                                 <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}">
                                 <span>Project 2</span>
                             </div>
@@ -435,11 +435,11 @@
         <div class="resize-handle"></div>
     </div>
 
-    <!-- Properties Dialog -->
+    <!-- Properties Dialog (Project 1) -->
     <div id="properties-dialog" class="window"
         style="display: none; width: 500px; height: 450px; top: 100px; left: 200px; position: absolute; z-index: 100;">
         <div class="title-bar">
-            <div class="title-bar-text">Project Properties</div>
+            <div class="title-bar-text">Project 1 Properties</div>
             <div class="title-bar-controls">
                 <button aria-label="Minimize"></button>
                 <button aria-label="Maximize"></button>
@@ -544,7 +544,7 @@
                                 </div>
                             </div>
                             <div class="deliverable-item">
-                                <div class="deliverable-icon">📁</div>
+                                <div class="deliverable-icon">📝</div>
                                 <div class="deliverable-content">
                                     <div class="deliverable-title">Source Code</div>
                                     <div class="deliverable-desc">All source code files (.m files)</div>
@@ -558,7 +558,7 @@
                                 </div>
                             </div>
                             <div class="deliverable-item">
-                                <div class="deliverable-icon">📝</div>
+                                <div class="deliverable-icon">📊</div>
                                 <div class="deliverable-content">
                                     <div class="deliverable-title">Report</div>
                                     <div class="deliverable-desc">Comments on results and Chain Rule validity</div>
@@ -612,6 +612,110 @@
         </div>
         <div class="resize-handle"></div>
     </div>
+
+    <!-- Properties Dialog (Project 2) -->
+    <div id="properties-dialog-project2" class="window"
+        style="display: none; width: 500px; height: 450px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project 2 Properties</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <div class="tab active" data-tab="general2">General</div>
+                    <div class="tab" data-tab="parts">Parts</div>
+                    <div class="tab" data-tab="deliverables2">Deliverables</div>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="general2-tab">
+                        <div class="properties-icon">
+                            <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}" width="64" height="64">
+                        </div>
+                        <div class="properties-info">
+                            <div class="info-row">
+                                <span class="info-label">Project Name:</span>
+                                <span class="info-value">Source Coding Techniques</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Course Code:</span>
+                                <span class="info-value">CIE 425</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Team Members:</span>
+                                <span class="info-value">3</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">Active</span>
+                            </div>
+                        </div>
+                        <div class="description-section">
+                            <h3>Description</h3>
+                            <p>Explore source coding techniques including Fixed-Length Codes, Huffman Coding, and Shannon-Fano Coding. Analyze compression performance on various distributions and real text files.</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="parts-tab">
+                        <h3>Project Parts</h3>
+                        <div class="tasks-list">
+                            <div class="task-item">
+                                <strong>Part 1:</strong> Uniform distribution analysis (M=4,6,8)
+                            </div>
+                            <div class="task-item">
+                                <strong>Part 2:</strong> Non-uniform distributions Y & Z
+                            </div>
+                            <div class="task-item">
+                                <strong>Part 3:</strong> Huffman compression for text files
+                            </div>
+                            <div class="task-item">
+                                <strong>Part 4:</strong> Shannon-Fano vs Huffman comparison
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="deliverables2-tab">
+                        <h3>Project Deliverables</h3>
+                        <div class="deliverables-list">
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📊</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Analysis Results</div>
+                                    <div class="deliverable-desc">All four parts with detailed results</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">💾</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Code Files</div>
+                                    <div class="deliverable-desc">Huffman and Shannon-Fano implementations</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📝</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Comparison Report</div>
+                                    <div class="deliverable-desc">Performance analysis and observations</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-buttons">
+                <button class="xp-button" onclick="window.location.href='/project2'">Open Project</button>
+                <button class="xp-button">Cancel</button>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
     <div id="upload-dialog" class="window"
         style="display: none; width: 400px; height: auto; top: 150px; left: 300px; position: absolute; z-index: 100;">
         <div class="title-bar">
@@ -672,6 +776,87 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Add event listeners for project folders
+        document.addEventListener('DOMContentLoaded', function() {
+            // Project 1 folder - double click to open project
+            const project1Folder = document.getElementById('project1-folder');
+            if (project1Folder) {
+                project1Folder.addEventListener('dblclick', function() {
+                    window.location.href = '/project1';
+                });
+            }
+
+            // Project 2 folder - double click to open project
+            const project2Folder = document.getElementById('project2-folder');
+            if (project2Folder) {
+                project2Folder.addEventListener('dblclick', function() {
+                    window.location.href = '/project2';
+                });
+            }
+
+            // Context menu for Project 2
+            if (project2Folder) {
+                project2Folder.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    const contextMenu = document.getElementById('context-menu');
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = e.pageX + 'px';
+                    contextMenu.style.top = e.pageY + 'px';
+                    
+                    // Store which project was right-clicked
+                    contextMenu.dataset.target = 'project2';
+                });
+            }
+
+            // Context menu for Project 1
+            if (project1Folder) {
+                project1Folder.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    const contextMenu = document.getElementById('context-menu');
+                    contextMenu.style.display = 'block';
+                    contextMenu.style.left = e.pageX + 'px';
+                    contextMenu.style.top = e.pageY + 'px';
+                    
+                    // Store which project was right-clicked
+                    contextMenu.dataset.target = 'project1';
+                });
+            }
+
+            // Handle context menu actions
+            document.querySelectorAll('.context-menu-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const action = this.dataset.action;
+                    const contextMenu = document.getElementById('context-menu');
+                    const target = contextMenu.dataset.target;
+                    
+                    if (action === 'open') {
+                        if (target === 'project2') {
+                            window.location.href = '/project2';
+                        } else if (target === 'project1') {
+                            window.location.href = '/project1';
+                        }
+                    } else if (action === 'properties') {
+                        if (target === 'project2') {
+                            document.getElementById('properties-dialog-project2').style.display = 'block';
+                        } else if (target === 'project1') {
+                            document.getElementById('properties-dialog').style.display = 'block';
+                        }
+                    }
+                    
+                    contextMenu.style.display = 'none';
+                });
+            });
+
+            // Hide context menu when clicking elsewhere
+            document.addEventListener('click', function() {
+                const contextMenu = document.getElementById('context-menu');
+                if (contextMenu) {
+                    contextMenu.style.display = 'none';
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
