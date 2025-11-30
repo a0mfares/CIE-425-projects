@@ -1171,10 +1171,6 @@ def lempel_ziv_encode_to_binary(sequence):
     # Determine alphabet
     alphabet = sorted(list(set(sequence)))
     
-    # Calculate bits needed for codes
-    max_code = len(dictionary)  # Maximum possible code value
-    code_bits = math.ceil(math.log2(max_code + 1)) if max_code > 0 else 1
-    
     # Calculate bits needed for symbols
     symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
     
@@ -1182,20 +1178,25 @@ def lempel_ziv_encode_to_binary(sequence):
     symbol_to_binary = {symbol: format(i, f'0{symbol_bits}b') 
                         for i, symbol in enumerate(alphabet)}
     
-    # Convert encoded pairs to binary
-    binary = ""
-    for code, symbol in encoded:
-        # Add code
-        binary += format(code, f'0{code_bits}b')
-        
-        # Add symbol if present
-        if symbol is not None:
-            binary += symbol_to_binary[symbol]
-        else:
-            # Use all zeros to indicate no symbol
-            binary += '0' * symbol_bits
+    # Elias-gamma encode helpers (use code+1 so 0 -> 1)
+    def gamma_encode_int(k):
+        # k is positive integer >= 1
+        n = k.bit_length() - 1  # floor(log2(k))
+        # prefix n zeros, then binary(k) in (n+1) bits
+        return ('0' * n) + format(k, f'0{n+1}b')
     
-    return binary
+    # Convert encoded pairs to binary
+    parts = []
+    for code, symbol in encoded:
+        # encode code as gamma(code+1) to handle code==0
+        parts.append(gamma_encode_int(code + 1))
+        # encode symbol field fixed width
+        if symbol is not None:
+            parts.append(symbol_to_binary[symbol])
+        else:
+            parts.append('0' * symbol_bits)
+    
+    return ''.join(parts)
 
 
 def lempel_ziv_decode_from_binary(binary, alphabet):
@@ -1213,54 +1214,65 @@ def lempel_ziv_decode_from_binary(binary, alphabet):
     
     alphabet = sorted(alphabet)
     
-    # Calculate bits per code and per symbol
-    # Estimate max dictionary size (conservative)
-    estimated_dict_size = len(binary) // 2
-    code_bits = math.ceil(math.log2(estimated_dict_size + 1)) if estimated_dict_size > 0 else 1
-    
+    # Calculate bits per symbol (fixed)
     symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
     
     # Create binary to symbol mapping
     binary_to_symbol = {format(i, f'0{symbol_bits}b'): symbol 
                         for i, symbol in enumerate(alphabet)}
     
-    # Initialize dictionary
-    dictionary = {0: ''}
-    next_code = 1
+    # Elias-gamma decode helper
+    def gamma_decode_at(s, pos):
+        # returns (value, new_pos) where value is decoded integer >=1
+        L = len(s)
+        # count leading zeros to find n
+        n = 0
+        while pos < L and s[pos] == '0':
+            n += 1
+            pos += 1
+        # now read n+1 bits (including the '1' we just hit or next bit)
+        if pos + (n + 1) > L:
+            return None, pos  # incomplete
+        val_bits = s[pos:pos + n + 1]
+        pos += n + 1
+        val = int(val_bits, 2)
+        return val, pos
     
     decoded = []
+    dictionary = {0: ''}
+    next_code = 1
     i = 0
+    L = len(binary)
     
-    while i + code_bits + symbol_bits <= len(binary):
-        # Read code
-        code_str = binary[i:i+code_bits]
-        code = int(code_str, 2)
-        i += code_bits
+    # parse until we run out of full (gamma-coded code + symbol_bits)
+    while i < L:
+        # decode gamma-coded integer
+        code_val, new_i = gamma_decode_at(binary, i)
+        if code_val is None:
+            break  # incomplete code at end
+        i = new_i
+        code = code_val - 1  # original code (0 allowed)
         
-        # Read symbol
-        symbol_str = binary[i:i+symbol_bits]
+        # ensure we have symbol_bits available
+        if i + symbol_bits > L:
+            break  # incomplete symbol at end
+        symbol_str = binary[i:i + symbol_bits]
         i += symbol_bits
         
-        # Get decoded string for this code
-        if code in dictionary:
-            decoded_string = dictionary[code]
-        else:
-            # This shouldn't happen in valid LZ78
-            decoded_string = ''
+        # get decoded string for code
+        decoded_string = dictionary.get(code, '')
+        if decoded_string:
+            decoded.extend(list(decoded_string))
         
-        # Output the decoded string
-        decoded.extend(list(decoded_string))
-        
-        # Get symbol (if not all zeros)
-        if symbol_str in binary_to_symbol and symbol_str != '0' * symbol_bits:
+        # symbol handling
+        if symbol_str != '0' * symbol_bits and symbol_str in binary_to_symbol:
             symbol = binary_to_symbol[symbol_str]
             decoded.append(symbol)
-            
-            # Add to dictionary
-            new_string = decoded_string + symbol
-            dictionary[next_code] = new_string
+            # add new dictionary entry
+            dictionary[next_code] = decoded_string + symbol
             next_code += 1
-        elif code != 0:  # Last encoding with no symbol
+        else:
+            # (code, None) pair - no new entry
             pass
     
     return decoded
