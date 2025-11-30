@@ -1173,7 +1173,8 @@ def lempel_ziv_encode_to_binary(sequence):
     alphabet = sorted(list(set(sequence)))
     
     # Calculate bits needed for codes
-    max_code = len(dictionary)  # Maximum possible code value
+    # NOTE: when computing code_bits we use the actual max code assigned in the dictionary
+    max_code = max(dictionary.values()) if dictionary else 0
     code_bits = math.ceil(math.log2(max_code + 1)) if max_code > 0 else 1
     
     # Calculate bits needed for symbols
@@ -1184,18 +1185,23 @@ def lempel_ziv_encode_to_binary(sequence):
                         for i, symbol in enumerate(alphabet)}
     
     # Convert encoded pairs to binary
-    binary = ""
+    # prepend a small header so the decoder can parse deterministically:
+    # header = [code_bits:8][symbol_bits:8][num_pairs:32]
+    num_pairs = len(encoded)
+    header = format(code_bits, '08b') + format(symbol_bits, '08b') + format(num_pairs, '032b')
+    body_bits = []
     for code, symbol in encoded:
         # Add code
-        binary += format(code, f'0{code_bits}b')
+        body_bits.append(format(code, f'0{code_bits}b'))
         
         # Add symbol if present
         if symbol is not None:
-            binary += symbol_to_binary[symbol]
+            body_bits.append(symbol_to_binary[symbol])
         else:
             # Use all zeros to indicate no symbol
-            binary += '0' * symbol_bits
+            body_bits.append('0' * symbol_bits)
     
+    binary = header + ''.join(body_bits)
     return binary
 
 
@@ -1216,10 +1222,27 @@ def lempel_ziv_decode_from_binary(binary, alphabet):
     
     # Calculate bits per code and per symbol
     # Estimate max dictionary size (conservative)
-    estimated_dict_size = len(binary) // 2
-    code_bits = math.ceil(math.log2(estimated_dict_size + 1)) if estimated_dict_size > 0 else 1
-    
-    symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
+    # NOTE: Instead of guessing, read header if present
+    if len(binary) >= 48:
+        # parse header: 8 bits code_bits, 8 bits symbol_bits, 32 bits num_pairs
+        code_bits = int(binary[0:8], 2)
+        symbol_bits = int(binary[8:16], 2)
+        try:
+            num_pairs = int(binary[16:48], 2)
+        except Exception:
+            num_pairs = None
+        body = binary[48:]
+    else:
+        # fallback to original heuristic if header missing
+        estimated_dict_size = len(binary) // 2
+        code_bits = math.ceil(math.log2(estimated_dict_size + 1)) if estimated_dict_size > 0 else 1
+        symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
+        num_pairs = None
+        body = binary
+
+    # Ensure minimum widths
+    code_bits = max(1, code_bits)
+    symbol_bits = max(1, symbol_bits)
     
     # Create binary to symbol mapping
     binary_to_symbol = {format(i, f'0{symbol_bits}b'): symbol 
@@ -1231,15 +1254,17 @@ def lempel_ziv_decode_from_binary(binary, alphabet):
     
     decoded = []
     i = 0
+    pairs_decoded = 0
     
-    while i + code_bits + symbol_bits <= len(binary):
+    # If num_pairs is known, stop after that many; otherwise parse until bits run out
+    while (num_pairs is None and (i + code_bits + symbol_bits) <= len(body)) or (num_pairs is not None and pairs_decoded < num_pairs and (i + code_bits + symbol_bits) <= len(body)):
         # Read code
-        code_str = binary[i:i+code_bits]
+        code_str = body[i:i+code_bits]
         code = int(code_str, 2)
         i += code_bits
         
         # Read symbol
-        symbol_str = binary[i:i+symbol_bits]
+        symbol_str = body[i:i+symbol_bits]
         i += symbol_bits
         
         # Get decoded string for this code
@@ -1263,8 +1288,11 @@ def lempel_ziv_decode_from_binary(binary, alphabet):
             next_code += 1
         elif code != 0:  # Last encoding with no symbol
             pass
+
+        pairs_decoded += 1
     
     return decoded
+
 
 def calculate_lz_efficiency(original_sequence, encoded_binary):
     """Calculate compression efficiency for Lempel-Ziv coding
