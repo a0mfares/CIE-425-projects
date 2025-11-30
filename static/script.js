@@ -1,3 +1,4 @@
+
 // Global variables for window management
 let windowZIndex = 100;
 let activeWindowId = null;
@@ -309,6 +310,10 @@ $(document).ready(function () {
                 <img src="/static/Icons/HardDrive.ico">
                 <span>Project 2</span>
             </div>
+            <div class="Folder" id="project3-folder">
+                <img src="/static/Icons/HardDrive.ico">
+                <span>Project 3</span>
+            </div>
         `);
 
         $('.Folder').on('click', function (e) {
@@ -342,7 +347,7 @@ $(document).ready(function () {
         const top = (windowHeight - dialogHeight) / 2;
 
         const dialogId = `upload-dialog-part${partNumber}`;
-        
+
         // Create dialog if it doesn't exist
         if ($(`#${dialogId}`).length === 0) {
             const partTitles = {
@@ -423,19 +428,19 @@ $(document).ready(function () {
                 uploadDialog.find('.progress-box').removeClass('visible');
                 let currentBox = 0;
                 const totalBoxes = uploadDialog.find('.progress-box').length;
-                
+
                 const showNextBox = setInterval(function () {
                     if (currentBox < totalBoxes) {
                         uploadDialog.find('.progress-box').eq(currentBox).addClass('visible');
                         currentBox++;
                     } else {
                         clearInterval(showNextBox);
-                        
+
                         // Send request based on part
                         let endpoint = '';
                         let formData = new FormData();
-                        
-                        switch(partNumber) {
+
+                        switch (partNumber) {
                             case 1:
                                 endpoint = '/analyze_part1';
                                 break;
@@ -509,7 +514,7 @@ $(document).ready(function () {
         let resultsText = '';
         let windowTitle = `Project 2 Part ${partNumber} Results`;
 
-        switch(partNumber) {
+        switch (partNumber) {
             case 1:
                 resultsText = formatPart1Results(data);
                 break;
@@ -564,7 +569,7 @@ $(document).ready(function () {
             const result = data[key];
             text += `CASE M = ${result.M}\n`;
             text += "─".repeat(70) + "\n\n";
-            
+
             text += `Entropy H(X) = ${result.entropy} bits/symbol\n\n`;
 
             text += "Fixed-Length Codes:\n";
@@ -604,7 +609,7 @@ $(document).ready(function () {
             result.observations.forEach(obs => {
                 text += `  • ${obs}\n`;
             });
-            
+
             text += "\n" + "=".repeat(70) + "\n\n";
         }
 
@@ -771,7 +776,7 @@ $(document).ready(function () {
     $(document).on('contextmenu', '#project2-folder', function (e) {
         e.preventDefault();
         const contextMenu = $('#context-menu-project2');
-        
+
         if (contextMenu.length === 0) {
             const menu = $(`
                 <div id="context-menu-project2" class="context-menu">
@@ -786,11 +791,11 @@ $(document).ready(function () {
                 </div>
             `);
             $('body').append(menu);
-            
+
             menu.find('.context-menu-item').on('click', function () {
                 const action = $(this).data('action');
                 const part = $(this).data('part');
-                
+
                 if (action === 'properties') {
                     $('#properties-dialog-project2').show();
                     addToTaskbar($('#properties-dialog-project2'), 'Project 2 Properties');
@@ -798,17 +803,17 @@ $(document).ready(function () {
                 } else if (part) {
                     showUploadDialogPart(part);
                 }
-                
+
                 menu.hide();
             });
         }
-        
+
         $('#context-menu-project2').css({
             display: 'block',
             left: e.pageX + 'px',
             top: e.pageY + 'px'
         });
-        
+
         return false;
     });
 
@@ -1446,7 +1451,7 @@ class Minesweeper {
 }
 
 let minesweeperGame = null;
-
+let selectedProject3Part = '1';
 function initMinesweeper() {
     const container = $('#minesweeper-game-container');
     container.empty();
@@ -1538,4 +1543,1066 @@ $(document).ready(function () {
     });
 
     makeWindowInteractive($('#minesweeper-help-window'));
+});
+// Add this function to your script.js file
+function showProject3AnalysisDialog() {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 300;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-analysis-dialog';
+    let dialog = $(`#${dialogId}`);
+
+    // Create dialog if it doesn't exist
+    if (dialog.length === 0) {
+        dialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 300px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 Analysis</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Select Project Part:</h3>
+                        
+                        <div class="part-option" data-part="1"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/folder.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Part 1 - Adaptive Arithmetic Coding</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze adaptive arithmetic coding algorithms</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="part-option" data-part="2"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/folder.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Part 2 - Lempel-Ziv Coding</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze Lempel-Ziv coding algorithms</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(dialog);
+        makeWindowInteractive(dialog);
+    }
+
+    // Show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 Analysis');
+    bringToFront(dialog);
+
+    // Handle part selection
+    dialog.find('.part-option').off('click').on('click', function () {
+        $('.part-option').css('background-color', '#f0f0f0');
+        $(this).css('background-color', '#d0e0f0');
+    });
+
+    dialog.find('.part-option').off('dblclick').on('dblclick', function () {
+        const partNumber = $(this).data('part');
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        console.log('Selected part:', partNumber);
+        if (partNumber === 1 || partNumber === '1') {
+            showProject3Part1Dialog();
+        } else if (partNumber === 2 || partNumber === '2') {
+            showProject3Part2Dialog();
+        }
+    });
+}
+function showProject3Part1Dialog() {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 350; // Increased height to accommodate three options
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-part1-dialog';
+    let dialog = $(`#${dialogId}`);
+
+    // Create dialog if it doesn't exist
+    if (dialog.length === 0) {
+        dialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 350px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 Part 1 - Adaptive Arithmetic Coding</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Select Input Method:</h3>
+                        
+                        <div class="test-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/test.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Use Test Sequences</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze predefined test sequences</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="file-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/text.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Upload Text File</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze a text file from your computer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/edit.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Enter Text Manually</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Type or paste text for analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(dialog);
+        makeWindowInteractive(dialog);
+    }
+
+    // Position and show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 Part 1');
+    bringToFront(dialog);
+
+    // Handle option selection
+    dialog.find('.test-option, .file-option, .text-option').off('click').on('click', function () {
+        $('.test-option, .file-option, .text-option').css('background-color', '#f0f0f0');
+        $(this).css('background-color', '#d0e0f0');
+    });
+
+    dialog.find('.test-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3TestDialog('1');
+    });
+
+    dialog.find('.file-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3FileDialog('1');
+    });
+
+    dialog.find('.text-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3TextDialog('1');
+    });
+}
+
+function showProject3Part2Dialog() {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 350; // Increased height to accommodate three options
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-part2-dialog';
+    let dialog = $(`#${dialogId}`);
+
+    // Create dialog if it doesn't exist
+    if (dialog.length === 0) {
+        dialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 350px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 Part 2 - Lempel-Ziv Coding</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Select Input Method:</h3>
+                        
+                        <div class="test-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/test.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Use Test Sequences</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze predefined test sequences</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="file-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/text.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Upload Text File</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Analyze a text file from your computer</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-option"
+                            style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                            <div style="display: flex; align-items: center;">
+                                <img src="/static/Icons/edit.ico" width="32" height="32" style="margin-right: 15px;">
+                                <div>
+                                    <strong>Enter Text Manually</strong><br>
+                                    <span style="color: #666; font-size: 10px;">Type or paste text for analysis</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(dialog);
+        makeWindowInteractive(dialog);
+    }
+
+    // Position and show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 Part 2');
+    bringToFront(dialog);
+
+    // Handle option selection
+    dialog.find('.test-option, .file-option, .text-option').off('click').on('click', function () {
+        $('.test-option, .file-option, .text-option').css('background-color', '#f0f0f0');
+        $(this).css('background-color', '#d0e0f0');
+    });
+
+    dialog.find('.test-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3TestDialog('2');
+    });
+
+    dialog.find('.file-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3FileDialog('2');
+    });
+
+    dialog.find('.text-option').off('dblclick').on('dblclick', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+        showProject3TextDialog('2');
+    });
+}
+// Also need to add these helper functions if they don't exist
+const testSequences = {
+    'S1': 'A B B C A',
+    'S2': 'A B C A B A C B A B C C A C B A A B B C C A B A A B B',
+    'S3': 'This is a longer test sequence with more characters to analyze compression performance on longer text sequences.'
+};
+
+function generateRandomSequence() {
+    const chars = ['A', 'B', 'C', 'D', 'E'];
+    const length = 20 + Math.floor(Math.random() * 30);
+    let sequence = '';
+    for (let i = 0; i < length; i++) {
+        sequence += chars[Math.floor(Math.random() * chars.length)] + ' ';
+    }
+    return sequence.trim();
+}
+
+function showProject3ProgressDialog(message) {
+    const dialogId = 'project3-progress-dialog';
+    let dialog = $(`#${dialogId}`);
+
+    if (dialog.length === 0) {
+        dialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 300px; height: 120px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Processing</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px; text-align: center;">
+                        <p>${message}</p>
+                        <div class="progress-container" style="margin-top: 10px;">
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                            <div class="progress-box"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+        $('body').append(dialog);
+        makeWindowInteractive(dialog);
+    }
+
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const left = (windowWidth - 300) / 2;
+    const top = (windowHeight - 120) / 2;
+
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    // Animate progress
+    dialog.find('.progress-box').removeClass('visible');
+    let currentBox = 0;
+    const totalBoxes = dialog.find('.progress-box').length;
+
+    const showNextBox = setInterval(function () {
+        if (currentBox < totalBoxes) {
+            dialog.find('.progress-box').eq(currentBox).addClass('visible');
+            currentBox++;
+        } else {
+            clearInterval(showNextBox);
+        }
+    }, 150);
+
+    return dialog;
+}
+// Update the showProject3FileDialog function to accept a part parameter
+function showProject3FileDialog(partNumber) {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 250;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-file-dialog';
+
+    // Create dialog if it doesn't exist
+    if ($(`#${dialogId}`).length === 0) {
+        const uploadDialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 250px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 - File Upload</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Select File for Analysis:</h3>
+                        <div class="file-input-container" style="margin: 15px 0;">
+                            <input type="file" id="file-input-project3" accept=".txt" style="display: none;">
+                            <button id="file-select-button-project3" class="xp-button">Choose File</button>
+                            <span id="file-name-project3" style="margin-left: 10px;">No file selected</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <button id="analyze-file-button-project3" class="xp-button" disabled>Analyze</button>
+                            <button id="cancel-file-button-project3" class="xp-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(uploadDialog);
+        makeWindowInteractive(uploadDialog);
+    }
+
+    // Get the dialog element
+    const dialog = $(`#${dialogId}`);
+
+    // Reset dialog state
+    dialog.find('#file-name-project3').text('No file selected');
+    dialog.find('#file-input-project3').val('');
+    dialog.find('#analyze-file-button-project3').prop('disabled', true);
+
+    // Position and show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 File Upload');
+    bringToFront(dialog);
+
+    // File selection handler
+    dialog.find('#file-select-button-project3').off('click').on('click', function () {
+        dialog.find('#file-input-project3').click();
+    });
+
+    dialog.find('#file-input-project3').off('change').on('change', function () {
+        const fileName = $(this).val().split('\\').pop();
+        if (fileName) {
+            dialog.find('#file-name-project3').text(fileName);
+            dialog.find('#analyze-file-button-project3').prop('disabled', false);
+        } else {
+            dialog.find('#file-name-project3').text('No file selected');
+            dialog.find('#analyze-file-button-project3').prop('disabled', true);
+        }
+    });
+
+    // Analyze button handler
+    dialog.find('#analyze-file-button-project3').off('click').on('click', function () {
+        const fileInput = dialog.find('#file-input-project3')[0];
+        if (fileInput.files.length === 0) return;
+
+        dialog.find('#analyze-file-button-project3').prop('disabled', true);
+        dialog.find('#file-name-project3').text('Analyzing...');
+
+        // Send request to Project 3 endpoint
+        let formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        $.ajax({
+            url: `/analyze_project3_part${partNumber}`,
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                dialog.hide();
+                removeFromTaskbar(dialogId);
+                showProject3Results(response, partNumber);
+            },
+            error: function (xhr, status, error) {
+                dialog.find('#file-name-project3').text('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+                dialog.find('#analyze-file-button-project3').prop('disabled', false);
+            }
+        });
+    });
+
+    // Cancel button handler
+    dialog.find('#cancel-file-button-project3').off('click').on('click', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+    });
+}
+
+// Update the showProject3TextDialog function to accept a part parameter
+function showProject3TextDialog(partNumber) {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 400;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-text-dialog';
+
+    // Create dialog if it doesn't exist
+    if ($(`#${dialogId}`).length === 0) {
+        const textDialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 400px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 - Text Input</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Enter Text for Analysis:</h3>
+                        <textarea id="text-input" style="width: 100%; height: 250px; margin: 10px 0; font-family: monospace;" placeholder="Enter or paste your text here..."></textarea>
+                        <div style="text-align: right;">
+                            <button id="analyze-text-button" class="xp-button">Analyze</button>
+                            <button id="cancel-text-button" class="xp-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(textDialog);
+        makeWindowInteractive(textDialog);
+    }
+
+    // Get the dialog element
+    const dialog = $(`#${dialogId}`);
+
+    // Reset dialog state
+    dialog.find('#text-input').val('');
+    dialog.find('#analyze-text-button').prop('disabled', false);
+
+    // Position and show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 Text Input');
+    bringToFront(dialog);
+
+    // Analyze button handler
+    dialog.find('#analyze-text-button').off('click').on('click', function () {
+        const text = dialog.find('#text-input').val();
+        if (!text) return;
+
+        dialog.find('#analyze-text-button').prop('disabled', true);
+        dialog.find('#text-input').prop('disabled', true);
+
+        // Send request to Project 3 endpoint
+        $.ajax({
+            url: `/analyze_project3_part${partNumber}`,
+            type: 'POST',
+            data: { text: text },
+            success: function (response) {
+                dialog.hide();
+                removeFromTaskbar(dialogId);
+                showProject3Results(response, partNumber);
+            },
+            error: function (xhr, status, error) {
+                dialog.find('#text-input').prop('disabled', false);
+                dialog.find('#analyze-text-button').prop('disabled', false);
+                alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+            }
+        });
+    });
+
+    // Cancel button handler
+    dialog.find('#cancel-text-button').off('click').on('click', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+    });
+}
+
+// Update the showProject3TestDialog function to accept a part parameter
+function showProject3TestDialog(partNumber) {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 500;
+    const dialogHeight = 300;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project3-test-dialog';
+
+    // Create dialog if it doesn't exist
+    if ($(`#${dialogId}`).length === 0) {
+        const testDialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: 500px; height: 300px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 3 - Test Sequences</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <h3 style="margin-top: 0;">Select Test Sequence:</h3>
+                        <div style="margin: 10px 0;">
+                            <select id="test-sequence-select" style="width: 100%; padding: 5px;">
+                                <option value="S1">S1: A B B C A</option>
+                                <option value="S2">S2: A B C A B A C B A B C C A C B A A B B</option>
+                                <option value="S3">S3: Long text sequence</option>
+                                <option value="random">Random Sequence</option>
+                            </select>
+                        </div>
+                        <div id="sequence-preview" style="margin: 10px 0; padding: 10px; background-color: #f0f0f0; height: 150px; overflow: auto; font-family: monospace; white-space: pre-wrap;"></div>
+                        <div style="text-align: right;">
+                            <button id="analyze-test-button" class="xp-button">Analyze</button>
+                            <button id="cancel-test-button" class="xp-button">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(testDialog);
+        makeWindowInteractive(testDialog);
+    }
+
+    // Get dialog element
+    const dialog = $(`#${dialogId}`);
+
+    // Reset dialog state
+    dialog.find('#analyze-test-button').prop('disabled', false);
+
+    // Position and show dialog
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 3 Test Sequences');
+    bringToFront(dialog);
+
+    // Initialize with first sequence
+    dialog.find('#sequence-preview').text(testSequences['S1']);
+
+    // Test sequence selection handler
+    dialog.find('#test-sequence-select').off('change').on('change', function () {
+        const sequence = $(this).val();
+        const sequenceText = sequence === 'random' ? generateRandomSequence() : testSequences[sequence];
+        dialog.find('#sequence-preview').text(sequenceText);
+    });
+
+    // Analyze button handler
+    dialog.find('#analyze-test-button').off('click').on('click', function () {
+        const selectedSequence = dialog.find('#test-sequence-select').val();
+        const sequenceText = selectedSequence === 'random' ? generateRandomSequence() : testSequences[selectedSequence];
+
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+
+        // Show progress indicator
+        const progressDialog = showProject3ProgressDialog('Analyzing test sequence...');
+
+        // Send request to Project 3 endpoint
+        $.ajax({
+            url: `/analyze_project3_part${partNumber}`,
+            type: 'POST',
+            data: { text: sequenceText },
+            success: function (response) {
+                progressDialog.hide();
+                removeFromTaskbar('project3-progress-dialog');
+                showProject3Results(response, partNumber);
+            },
+            error: function (xhr, status, error) {
+                progressDialog.hide();
+                removeFromTaskbar('project3-progress-dialog');
+                alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Unknown error'));
+            }
+        });
+    });
+
+    // Cancel button handler
+    dialog.find('#cancel-test-button').off('click').on('click', function () {
+        dialog.hide();
+        removeFromTaskbar(dialogId);
+    });
+}
+
+// Update the showProject3Results function
+function showProject3Results(data, partNumber) {
+    let resultsText = '';
+    let windowTitle = `Project 3 Part ${partNumber} Results`;
+
+    switch (partNumber) {
+        case '1':
+            resultsText = formatProject3Results(data, 1);
+            break;
+        case '2':
+            resultsText = formatProject3Results(data, 2);
+            break;
+    }
+
+    const resultWindow = $(`
+        <div class="window project3-results-window"
+            style="display: none; width: 700px; height: 500px; top: 80px; left: 150px; position: absolute; z-index: 100;">
+            <div class="title-bar">
+                <img src="/static/Icons/text.ico" width="20px">
+                <div class="title-bar-text">${windowTitle}</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="text-content">
+                    <pre>${resultsText}</pre>
+                </div>
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+    `);
+
+    $('body').append(resultWindow);
+    makeWindowInteractive(resultWindow);
+    openWindow(resultWindow, windowTitle);
+
+    resultWindow.find('.title-bar-controls button[aria-label="Close"]').on('click', function () {
+        resultWindow.hide();
+        removeFromTaskbar('project3-results-window');
+        resultWindow.remove();
+    });
+}
+// Updated formatProject3Results function to handle new response format
+function formatProject3Results(data, partNumber) {
+    let text = "Universal Source Coding Analysis - Part " + partNumber + "\n";
+    text += "=".repeat(70) + "\n\n";
+
+    if (partNumber === 1) {
+        // Adaptive Arithmetic Coding Results
+        text += "Adaptive Arithmetic Coding Results:\n";
+        text += "─".repeat(70) + "\n\n";
+
+        // Check for errors first
+        let hasErrors = false;
+        for (let seq in data) {
+            if (data[seq].error) {
+                hasErrors = true;
+                text += "ERROR in " + seq + ": " + data[seq].error + "\n";
+            }
+        }
+        if (hasErrors) {
+            text += "\n";
+        }
+
+        // Display test sequences analyzed
+        if (data.S1 && !data.S1.error) {
+            text += "Test Sequence S1:\n";
+            text += "  Sequence: " + (data.S1.sequence_display || (data.S1.sequence ? data.S1.sequence.join(' ') : 'N/A')) + "\n";
+            text += "  Length: " + data.S1.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S1.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S1.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Encoded Length: " + data.S1.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S1.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S1.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S1.efficiency.toFixed(4) +
+                (data.S1.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S1.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S1.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Binary: " + data.S1.encoded_binary + "\n\n";
+        }
+
+        if (data.S2 && !data.S2.error) {
+            text += "Test Sequence S2:\n";
+            text += "  Sequence: " + (data.S2.sequence_display || (data.S2.sequence ? data.S2.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.S2.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S2.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S2.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Encoded Length: " + data.S2.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S2.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S2.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S2.efficiency.toFixed(4) +
+                (data.S2.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S2.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S2.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Binary: " + data.S2.encoded_binary + "\n\n";
+        }
+
+        if (data.S3 && !data.S3.error) {
+            text += "Test Sequence S3:\n";
+            text += "  Sequence: " + (data.S3.sequence_display || (data.S3.sequence ? data.S3.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.S3.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S3.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S3.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Encoded Length: " + data.S3.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S3.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S3.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S3.efficiency.toFixed(4) +
+                (data.S3.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S3.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S3.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Binary: " + data.S3.encoded_binary + "\n\n";
+        }
+
+        if (data.Custom && !data.Custom.error) {
+            text += "Custom Sequence:\n";
+            text += "  Sequence: " + (data.Custom.sequence_display || (data.Custom.sequence ? data.Custom.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.Custom.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.Custom.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.Custom.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Encoded Length: " + data.Custom.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.Custom.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.Custom.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.Custom.efficiency.toFixed(4) +
+                (data.Custom.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.Custom.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.Custom.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Binary: " + data.Custom.encoded_binary + "\n\n";
+        }
+
+        // Display summary if available
+        if (data.summary) {
+            text += "Overall Analysis:\n";
+            text += "─".repeat(70) + "\n";
+            text += "Average Efficiency: " + data.summary.average_efficiency.toFixed(4) + "\n";
+            text += "Average Compression: " + data.summary.average_compression.toFixed(2) + "%\n";
+            text += "All Sequences Lossless: " + (data.summary.all_lossless ? "YES ✓" : "NO ✗") + "\n\n";
+        }
+
+        text += "Comparison Observations:\n";
+        text += "─".repeat(70) + "\n";
+
+        // Add observations based on efficiency comparisons
+        if (data.S1 && data.S2) {
+            const s1Eff = data.S1.efficiency;
+            const s2Eff = data.S2.efficiency;
+            if (Math.abs(s1Eff - s2Eff) < 0.05) {
+                text += "• S1 and S2 have similar efficiency\n";
+            } else if (s1Eff < s2Eff) {
+                text += "• S1 achieves better compression than S2\n";
+            } else {
+                text += "• S2 achieves better compression than S1\n";
+            }
+        }
+
+        if (data.S2 && data.S3) {
+            const s2Eff = data.S2.efficiency;
+            const s3Eff = data.S3.efficiency;
+            if (Math.abs(s2Eff - s3Eff) < 0.05) {
+                text += "• S2 and S3 have similar efficiency\n";
+            } else if (s2Eff < s3Eff) {
+                text += "• S2 achieves better compression than S3\n";
+            } else {
+                text += "• S3 achieves better compression than S2\n";
+            }
+        }
+
+        text += "• Adaptive Arithmetic Coding adapts to symbol frequencies over time\n";
+        text += "• Efficiency improves with longer sequences as the model adapts\n";
+        text += "• Near-entropy performance is achieved for sequences with stable statistics\n";
+
+    } else if (partNumber === 2) {
+        // Lempel-Ziv Coding Results
+        text += "Lempel-Ziv Coding Results:\n";
+        text += "─".repeat(70) + "\n\n";
+
+        // Check for errors first
+        let hasErrors = false;
+        for (let seq in data) {
+            if (data[seq].error) {
+                hasErrors = true;
+                text += "ERROR in " + seq + ": " + data[seq].error + "\n";
+            }
+        }
+        if (hasErrors) {
+            text += "\n";
+        }
+
+        // Display test sequences analyzed
+        if (data.S1 && !data.S1.error) {
+            text += "Test Sequence S1:\n";
+            text += "  Sequence: " + (data.S1.sequence_display || (data.S1.sequence ? data.S1.sequence.join(' ') : 'N/A')) + "\n";
+            text += "  Length: " + data.S1.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S1.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S1.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Dictionary Size: " + data.S1.dictionary_size + " entries\n";
+            text += "  Patterns Found: " + data.S1.patterns_found + "\n";
+            text += "  Longest Pattern: \"" + data.S1.longest_pattern + "\" (" + data.S1.longest_pattern_length + " chars)\n";
+            text += "  Encoded Pairs: " + data.S1.num_encoded_pairs + "\n";
+            text += "  Encoded Length: " + data.S1.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S1.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S1.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S1.efficiency.toFixed(4) +
+                (data.S1.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S1.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S1.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Pairs: " + data.S1.encoded_pairs + "\n\n";
+        }
+
+        if (data.S2 && !data.S2.error) {
+            text += "Test Sequence S2:\n";
+            text += "  Sequence: " + (data.S2.sequence_display || (data.S2.sequence ? data.S2.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.S2.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S2.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S2.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Dictionary Size: " + data.S2.dictionary_size + " entries\n";
+            text += "  Patterns Found: " + data.S2.patterns_found + "\n";
+            text += "  Longest Pattern: \"" + data.S2.longest_pattern + "\" (" + data.S2.longest_pattern_length + " chars)\n";
+            text += "  Encoded Pairs: " + data.S2.num_encoded_pairs + "\n";
+            text += "  Encoded Length: " + data.S2.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S2.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S2.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S2.efficiency.toFixed(4) +
+                (data.S2.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S2.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S2.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Pairs: " + data.S2.encoded_pairs + "\n\n";
+        }
+
+        if (data.S3 && !data.S3.error) {
+            text += "Test Sequence S3:\n";
+            text += "  Sequence: " + (data.S3.sequence_display || (data.S3.sequence ? data.S3.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.S3.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.S3.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.S3.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Dictionary Size: " + data.S3.dictionary_size + " entries\n";
+            text += "  Patterns Found: " + data.S3.patterns_found + "\n";
+            text += "  Longest Pattern: \"" + data.S3.longest_pattern + "\" (" + data.S3.longest_pattern_length + " chars)\n";
+            text += "  Encoded Pairs: " + data.S3.num_encoded_pairs + "\n";
+            text += "  Encoded Length: " + data.S3.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.S3.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.S3.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.S3.efficiency.toFixed(4) +
+                (data.S3.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.S3.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.S3.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Pairs: " + data.S3.encoded_pairs + "\n\n";
+        }
+
+        if (data.Custom && !data.Custom.error) {
+            text += "Custom Sequence:\n";
+            text += "  Sequence: " + (data.Custom.sequence_display || (data.Custom.sequence ? data.Custom.sequence.join(' ').substring(0, 50) : 'N/A')) + "\n";
+            text += "  Length: " + data.Custom.sequence_length + " symbols\n";
+            text += "  Alphabet Size: " + data.Custom.alphabet_size + " unique symbols\n";
+            text += "  Entropy: " + data.Custom.entropy.toFixed(4) + " bits/symbol\n";
+            text += "  Dictionary Size: " + data.Custom.dictionary_size + " entries\n";
+            text += "  Patterns Found: " + data.Custom.patterns_found + "\n";
+            text += "  Longest Pattern: \"" + data.Custom.longest_pattern + "\" (" + data.Custom.longest_pattern_length + " chars)\n";
+            text += "  Encoded Pairs: " + data.Custom.num_encoded_pairs + "\n";
+            text += "  Encoded Length: " + data.Custom.encoded_length + " bits\n";
+            text += "  Fixed-Length: " + data.Custom.fixed_length + " bits\n";
+            text += "  Bits per Symbol: " + data.Custom.bits_per_symbol.toFixed(4) + "\n";
+            text += "  Efficiency: " + data.Custom.efficiency.toFixed(4) +
+                (data.Custom.efficiency < 1.0 ? " (Compression)" : " (Expansion)") + "\n";
+            text += "  Compression Ratio: " + data.Custom.compression_ratio.toFixed(2) + "%\n";
+            text += "  Lossless: " + (data.Custom.is_lossless ? "YES ✓" : "NO ✗") + "\n";
+            text += "  Encoded Pairs: " + data.Custom.encoded_pairs + "\n\n";
+        }
+
+        // Display summary if available
+        if (data.summary) {
+            text += "Overall Analysis:\n";
+            text += "─".repeat(70) + "\n";
+            text += "Average Efficiency: " + data.summary.average_efficiency.toFixed(4) + "\n";
+            text += "Average Compression: " + data.summary.average_compression.toFixed(2) + "%\n";
+            text += "Total Patterns Found: " + data.summary.total_patterns_found + "\n";
+            text += "All Sequences Lossless: " + (data.summary.all_lossless ? "YES ✓" : "NO ✗") + "\n\n";
+        }
+
+        text += "Comparison Observations:\n";
+        text += "─".repeat(70) + "\n";
+
+        // Add observations based on efficiency and patterns
+        if (data.S1 && data.S2) {
+            const s1Eff = data.S1.efficiency;
+            const s2Eff = data.S2.efficiency;
+            if (Math.abs(s1Eff - s2Eff) < 0.05) {
+                text += "• S1 and S2 have similar efficiency\n";
+            } else if (s1Eff < s2Eff) {
+                text += "• S1 achieves better compression than S2\n";
+            } else {
+                text += "• S2 achieves better compression than S1\n";
+            }
+        }
+
+        if (data.S2 && data.S3) {
+            const s2Patterns = data.S2.patterns_found;
+            const s3Patterns = data.S3.patterns_found;
+            text += "• S3 found " + s3Patterns + " patterns vs S2's " + s2Patterns + " patterns\n";
+        }
+
+        text += "• Lempel-Ziv performs better on sequences with repeated patterns\n";
+        text += "• Dictionary grows as new patterns are discovered\n";
+        text += "• Longer sequences benefit more from dictionary-based compression\n";
+        text += "• Pattern length indicates redundancy in the source\n";
+    }
+
+    text += "\n" + "=".repeat(70) + "\n";
+
+    return text;
+}
+
+// Update the Project 3 folder context menu handler
+$(document).on('contextmenu', '#project3-folder', function (e) {
+    e.preventDefault();
+    const contextMenu = $('#context-menu-project3');
+
+    if (contextMenu.length === 0) {
+        const menu = $(`
+            <div id="context-menu-project3" class="context-menu">
+                <div class="context-menu-item" data-action="open">Open</div>
+                <div class="context-menu-separator"></div>
+                <div class="context-menu-item" data-action="properties">Properties</div>
+            </div>
+        `);
+        $('body').append(menu);
+
+        menu.find('.context-menu-item').on('click', function () {
+            const action = $(this).data('action');
+
+            if (action === 'properties') {
+                $('#properties-dialog-project3').show();
+                addToTaskbar($('#properties-dialog-project3'), 'Project 3 Properties');
+                bringToFront($('#properties-dialog-project3'));
+            } else if (action === 'open') {
+                showProject3AnalysisDialog();
+            }
+
+            menu.hide();
+        });
+    }
+
+    $('#context-menu-project3').css({
+        display: 'block',
+        left: e.pageX + 'px',
+        top: e.pageY + 'px'
+    });
+
+    return false;
+});
+
+// Update the Project 3 folder double-click handler
+$(document).on('dblclick', '#project3-folder', function () {
+    showProject3AnalysisDialog();
 });

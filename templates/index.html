@@ -150,6 +150,9 @@
                             <div class="sidebar-item">
                                 <span>Project 2</span>
                             </div>
+                            <div class="sidebar-item">
+                                <span>Project 3</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -166,6 +169,10 @@
                             <div class="Folder" id="project2-folder">
                                 <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}">
                                 <span>Project 2</span>
+                            </div>
+                            <div class="Folder" id="project3-folder">
+                                <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}">
+                                <span>Project 3</span>
                             </div>
                         </div>
                     </div>
@@ -348,19 +355,19 @@
             </div>
         </div>
         <div class="window-body">
-              <menu role="menubar">
-            <li role="menuitem" id="game-menu">
-                New Game
-                <div class="dropdown-menu" id="game-dropdown">
-                    <div class="menu-item" data-difficulty="beginner">Beginner</div>
-                    <div class="menu-item" data-difficulty="intermediate">Intermediate</div>
-                    <div class="menu-item" data-difficulty="expert">Expert</div>
-                    <div class="menu-separator"></div>
-                    <div class="menu-item" data-action="exit">Exit</div>
-                </div>
-            </li>
-            <li role="menuitem" id="help-menu">Help</li>
-        </menu>
+            <menu role="menubar">
+                <li role="menuitem" id="game-menu">
+                    New Game
+                    <div class="dropdown-menu" id="game-dropdown">
+                        <div class="menu-item" data-difficulty="beginner">Beginner</div>
+                        <div class="menu-item" data-difficulty="intermediate">Intermediate</div>
+                        <div class="menu-item" data-difficulty="expert">Expert</div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-item" data-action="exit">Exit</div>
+                    </div>
+                </li>
+                <li role="menuitem" id="help-menu">Help</li>
+            </menu>
             <div id="minesweeper-game-container">
             </div>
         </div>
@@ -657,7 +664,9 @@
                         </div>
                         <div class="description-section">
                             <h3>Description</h3>
-                            <p>Explore source coding techniques including Fixed-Length Codes, Huffman Coding, and Shannon-Fano Coding. Analyze compression performance on various distributions and real text files.</p>
+                            <p>Explore source coding techniques including Fixed-Length Codes, Huffman Coding, and
+                                Shannon-Fano Coding. Analyze compression performance on various distributions and real
+                                text files.</p>
                         </div>
                     </div>
 
@@ -716,6 +725,211 @@
         <div class="resize-handle"></div>
     </div>
 
+    <!-- Properties Dialog (Project 3) -->
+    <div id="properties-dialog-project3" class="window"
+        style="display: none; width: 500px; height: 450px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project 3 Properties</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div class="tab-container">
+                <div class="tab-nav">
+                    <div class="tab active" data-tab="general3">General</div>
+                    <div class="tab" data-tab="parts3">Parts</div>
+                    <div class="tab" data-tab="deliverables3">Deliverables</div>
+                </div>
+
+                <div class="tab-content">
+                    <div class="tab-pane active" id="general3-tab">
+                        <div class="properties-icon">
+                            <img src="{{ url_for('static', filename='Icons/HardDrive.ico') }}" width="64" height="64">
+                        </div>
+                        <div class="properties-info">
+                            <div class="info-row">
+                                <span class="info-label">Project Name:</span>
+                                <span class="info-value">Universal Source Coding</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Course Code:</span>
+                                <span class="info-value">CIE 425</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Team Members:</span>
+                                <span class="info-value">3</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Status:</span>
+                                <span class="info-value">Active</span>
+                            </div>
+                        </div>
+                        <div class="description-section">
+                            <h3>Description</h3>
+                            <p>Implement and analyze universal source coding techniques including Adaptive Arithmetic
+                                Coding and Lempel-Ziv Coding. Compare their performance on various types of data.</p>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="parts3-tab">
+                        <h3>Project Parts</h3>
+                        <div class="tasks-list">
+                            <div class="task-item">
+                                <strong>Part 1:</strong> Adaptive Arithmetic Coding
+                            </div>
+                            <div class="task-item">
+                                <strong>Part 2:</strong> Lempel-Ziv Coding
+                            </div>
+                            <div class="task-item">
+                                <strong>Part 3:</strong> Performance Comparison
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="deliverables3-tab">
+                        <h3>Project Deliverables</h3>
+                        <div class="deliverables-list">
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📊</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Analysis Results</div>
+                                    <div class="deliverable-desc">All parts with detailed results</div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">💾</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Code Files</div>
+                                    <div class="deliverable-desc">Adaptive Arithmetic and Lempel-Ziv implementations
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">📝</div>
+                                <div class="deliverable-content">
+                                    <div class="deliverable-title">Comparison Report</div>
+                                    <div class="deliverable-desc">Performance analysis and observations</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialog-buttons">
+                <button class="xp-button" onclick="window.location.href='/project3'">Open Project</button>
+                <button class="xp-button">Cancel</button>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+    <!-- Add this to your HTML file -->
+    <div id="project3-analysis-dialog" class="window"
+        style="display: none; width: 500px; height: 300px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project 3 Analysis</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                <h3 style="margin-top: 0;">Select Project Part:</h3>
+
+                <div class="part-option" data-part="1"
+                    style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="/static/Icons/folder.ico" width="32" height="32" style="margin-right: 15px;">
+                        <div>
+                            <strong>Part 1 - Adaptive Arithmetic Coding</strong><br>
+                            <span style="color: #666; font-size: 10px;">Analyze adaptive arithmetic coding
+                                algorithms</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="part-option" data-part="2"
+                    style="margin: 15px 0; padding: 15px; cursor: pointer; border: 1px solid #c0c0c0; background-color: #f0f0f0;">
+                    <div style="display: flex; align-items: center;">
+                        <img src="/static/Icons/folder.ico" width="32" height="32" style="margin-right: 15px;">
+                        <div>
+                            <strong>Part 2 - Lempel-Ziv Coding</strong><br>
+                            <span style="color: #666; font-size: 10px;">Analyze Lempel-Ziv coding algorithms</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+    <!-- Project 3 Test Sequences Dialog -->
+    <div id="project3-test-dialog" class="window"
+        style="display: none; width: 500px; height: 400px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project 3 - Test Sequences</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                <h3 style="margin-top: 0;">Select Test Sequence:</h3>
+                <div style="margin: 10px 0;">
+                    <select id="test-sequence-select" style="width: 100%; padding: 5px;">
+                        <option value="S1">S1: A B B C A</option>
+                        <option value="S2">S2: A B C A B A C B A B C C A C B A A B B C C A B A A B B</option>
+                        <option value="S3">S3: Long text sequence</option>
+                        <option value="random">Random Sequence</option>
+                    </select>
+                </div>
+                <div id="sequence-preview"
+                    style="margin: 10px 0; padding: 10px; background-color: #f0f0f0; height: 150px; overflow: auto; font-family: monospace; white-space: pre-wrap;">
+                </div>
+                <div style="text-align: right;">
+                    <button id="analyze-test-button" class="xp-button">Analyze</button>
+                    <button id="cancel-test-button" class="xp-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Project 3 File Upload Dialog -->
+    <div id="project3-file-dialog" class="window"
+        style="display: none; width: 500px; height: 250px; top: 100px; left: 200px; position: absolute; z-index: 100;">
+        <div class="title-bar">
+            <div class="title-bar-text">Project 3 - File Upload</div>
+            <div class="title-bar-controls">
+                <button aria-label="Minimize"></button>
+                <button aria-label="Maximize"></button>
+                <button aria-label="Close"></button>
+            </div>
+        </div>
+        <div class="window-body">
+            <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                <h3 style="margin-top: 0;">Select File for Analysis:</h3>
+                <div class="file-input-container" style="margin: 15px 0;">
+                    <input type="file" id="file-input-project3" accept=".txt" style="display: none;">
+                    <button id="file-select-button-project3" class="xp-button">Choose File</button>
+                    <span id="file-name-project3" style="margin-left: 10px;">No file selected</span>
+                </div>
+                <div style="text-align: right;">
+                    <button id="analyze-file-button-project3" class="xp-button" disabled>Analyze</button>
+                    <button id="cancel-file-button-project3" class="xp-button">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div class="resize-handle"></div>
+    </div>
+
+    <!-- Upload Dialog -->
     <div id="upload-dialog" class="window"
         style="display: none; width: 400px; height: auto; top: 150px; left: 300px; position: absolute; z-index: 100;">
         <div class="title-bar">
@@ -738,7 +952,6 @@
                 </div>
                 <div class="upload-progress" style="display: none; margin-top: 15px;">
                     <div class="progress-container">
-                        <div class="progress-box"></div>
                         <div class="progress-box"></div>
                         <div class="progress-box"></div>
                         <div class="progress-box"></div>
@@ -776,87 +989,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
-    <script>
-        // Add event listeners for project folders
-        document.addEventListener('DOMContentLoaded', function() {
-            // Project 1 folder - double click to open project
-            const project1Folder = document.getElementById('project1-folder');
-            if (project1Folder) {
-                project1Folder.addEventListener('dblclick', function() {
-                    window.location.href = '/project1';
-                });
-            }
-
-            // Project 2 folder - double click to open project
-            const project2Folder = document.getElementById('project2-folder');
-            if (project2Folder) {
-                project2Folder.addEventListener('dblclick', function() {
-                    window.location.href = '/project2';
-                });
-            }
-
-            // Context menu for Project 2
-            if (project2Folder) {
-                project2Folder.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    const contextMenu = document.getElementById('context-menu');
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = e.pageX + 'px';
-                    contextMenu.style.top = e.pageY + 'px';
-                    
-                    // Store which project was right-clicked
-                    contextMenu.dataset.target = 'project2';
-                });
-            }
-
-            // Context menu for Project 1
-            if (project1Folder) {
-                project1Folder.addEventListener('contextmenu', function(e) {
-                    e.preventDefault();
-                    const contextMenu = document.getElementById('context-menu');
-                    contextMenu.style.display = 'block';
-                    contextMenu.style.left = e.pageX + 'px';
-                    contextMenu.style.top = e.pageY + 'px';
-                    
-                    // Store which project was right-clicked
-                    contextMenu.dataset.target = 'project1';
-                });
-            }
-
-            // Handle context menu actions
-            document.querySelectorAll('.context-menu-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const action = this.dataset.action;
-                    const contextMenu = document.getElementById('context-menu');
-                    const target = contextMenu.dataset.target;
-                    
-                    if (action === 'open') {
-                        if (target === 'project2') {
-                            window.location.href = '/project2';
-                        } else if (target === 'project1') {
-                            window.location.href = '/project1';
-                        }
-                    } else if (action === 'properties') {
-                        if (target === 'project2') {
-                            document.getElementById('properties-dialog-project2').style.display = 'block';
-                        } else if (target === 'project1') {
-                            document.getElementById('properties-dialog').style.display = 'block';
-                        }
-                    }
-                    
-                    contextMenu.style.display = 'none';
-                });
-            });
-
-            // Hide context menu when clicking elsewhere
-            document.addEventListener('click', function() {
-                const contextMenu = document.getElementById('context-menu');
-                if (contextMenu) {
-                    contextMenu.style.display = 'none';
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

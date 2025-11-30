@@ -5,8 +5,12 @@ import random
 import heapq
 import itertools
 from collections import defaultdict, Counter
+import sys
+import json
+from decimal import Decimal, getcontext
 
 app = Flask(__name__)
+getcontext().prec = 50
 
 # Configure upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -704,7 +708,733 @@ def generate_part4_observations(fano_comp, huffman_comp, avg_fano, avg_huffman):
     obs.append("Shannon-Fano is simpler to implement but may be slightly less efficient than Huffman")
     
     return obs
+    
+# ===============================================
+# PROJECT 3 - Universal Source Coding (Fixed)
+# ===============================================
+def initialize_adaptive_model(alphabet):
+    """Initialize probability model for adaptive arithmetic coding
+    
+    Args:
+        alphabet: List of unique symbols in the sequence
+        
+    Returns:
+        Dictionary containing symbol statistics and cumulative probabilities
+    """
+    model = {}
+    total_symbols = len(alphabet)
+    
+    # Initialize each symbol with count=1 and equal probability
+    for symbol in alphabet:
+        model[symbol] = {
+            'count': 1, 
+            'probability': Decimal(1) / Decimal(total_symbols)
+        }
+
+    # Calculate cumulative probabilities (sorted order for consistency)
+    cumulative_prob = Decimal(0)
+    for symbol in sorted(alphabet):
+        model[symbol]['cumulative_prob'] = cumulative_prob
+        cumulative_prob += model[symbol]['probability']
+    
+    return model
 
 
+def update_adaptive_model(model, symbol):
+    """Update the probability model after encoding/decoding a symbol
+    
+    Args:
+        model: Current probability model
+        symbol: The symbol that was just processed
+        
+    Returns:
+        Updated model with new probabilities
+    """
+    # Increment count for the observed symbol
+    model[symbol]['count'] += 1
+    
+    # Recalculate total count
+    total_count = sum(s['count'] for s in model.values())
+    
+    # Update all probabilities based on new counts
+    for s in model:
+        model[s]['probability'] = Decimal(model[s]['count']) / Decimal(total_count)
+    
+    # Recalculate cumulative probabilities
+    cumulative_prob = Decimal(0)
+    for s in sorted(model.keys()):
+        model[s]['cumulative_prob'] = cumulative_prob
+        cumulative_prob += model[s]['probability']
+    
+    return model
+
+
+def adaptive_arithmetic_encode(sequence):
+    """Encode a sequence using adaptive arithmetic coding
+    
+    Args:
+        sequence: List of symbols to encode
+        
+    Returns:
+        Tuple of (binary_string, debug_info_dict)
+    """
+    if not sequence:
+        return "", {}
+    
+    # Get unique alphabet from sequence
+    alphabet = sorted(list(set(sequence)))
+    model = initialize_adaptive_model(alphabet)
+    
+    # Initialize range [low, high)
+    low = Decimal(0)
+    high = Decimal(1)
+    
+    # Track ranges for debugging
+    ranges = []
+    
+    # Process each symbol
+    for symbol in sequence:
+        # Get symbol's probability range
+        symbol_low = Decimal(model[symbol]['cumulative_prob'])
+        symbol_high = symbol_low + Decimal(model[symbol]['probability'])
+        
+        # Narrow the range
+        range_width = high - low
+        high = low + range_width * symbol_high
+        low = low + range_width * symbol_low
+        
+        ranges.append((float(low), float(high)))
+        
+        # Update model for next symbol
+        model = update_adaptive_model(model, symbol)
+    
+    # Calculate the number of bits needed to represent the final range
+    # We need enough bits to ensure the value falls within the final range
+    range_width = high - low
+    if range_width > 0:
+        # Calculate how many bits we need to represent this range
+        bits_needed = max(1, int(-math.log2(float(range_width))) + 2)
+    else:
+        bits_needed = 50  # Default to a reasonable number of bits
+    
+    # Find a value in the final range
+    # We use the midpoint to ensure we're well within the range
+    final_value = (low + high) / 2
+    
+    # Convert to binary with sufficient precision
+    binary = decimal_to_binary(final_value, max_bits=bits_needed)
+    
+    # Calculate entropy and other metrics
+    char_counts = Counter(sequence)
+    total = len(sequence)
+    probs = [count/total for count in char_counts.values()]
+    entropy = -sum(p * math.log2(p) for p in probs if p > 0)
+    
+    return binary, {
+        'model': model, 
+        'ranges': ranges,
+        'final_range': (float(low), float(high)),
+        'alphabet': alphabet,
+        'entropy': entropy,
+        'bits_needed': bits_needed
+    }
+
+
+def decimal_to_binary(value, max_bits=50):
+    """Convert decimal value in [0,1] to binary representation
+    
+    Args:
+        value: Decimal value between 0 and 1
+        max_bits: Maximum number of bits to generate
+        
+    Returns:
+        Binary string representation
+    """
+    if value <= 0:
+        return "0"
+    if value >= 1:
+        return "1" * max_bits
+    
+    binary = ""
+    remaining = Decimal(value)
+    
+    for _ in range(max_bits):
+        remaining *= 2
+        if remaining >= 1:
+            binary += "1"
+            remaining -= 1
+        else:
+            binary += "0"
+        
+        # Stop if we've captured enough precision
+        if remaining == 0:
+            break
+    
+    return binary
+
+
+def binary_to_decimal(binary):
+    """Convert binary string to decimal value in [0,1]
+    
+    Args:
+        binary: String of '0' and '1' characters
+        
+    Returns:
+        Decimal value
+    """
+    if not binary:
+        return Decimal(0)
+    
+    value = Decimal(0)
+    for i, bit in enumerate(binary):
+        if bit == '1':
+            value += Decimal(1) / (Decimal(2) ** (i + 1))
+    
+    return value
+
+
+def adaptive_arithmetic_decode(binary, num_symbols, alphabet):
+    """Decode binary string using adaptive arithmetic coding
+    
+    Args:
+        binary: Binary string to decode
+        num_symbols: Number of symbols to decode
+        alphabet: List of symbols in the alphabet
+        
+    Returns:
+        List of decoded symbols
+    """
+    if not binary or num_symbols <= 0 or not alphabet:
+        return []
+    
+    # Convert binary to decimal value
+    value = binary_to_decimal(binary)
+    
+    # Initialize model with same alphabet
+    alphabet = sorted(alphabet)
+    model = initialize_adaptive_model(alphabet)
+    
+    decoded = []
+    
+    # Decode each symbol
+    for _ in range(num_symbols):
+        # Find which symbol's range contains the current value
+        for symbol in sorted(model.keys()):
+            symbol_low = Decimal(model[symbol]['cumulative_prob'])
+            symbol_high = symbol_low + Decimal(model[symbol]['probability'])
+            
+            if symbol_low <= value < symbol_high:
+                decoded.append(symbol)
+                
+                # Scale value back to [0,1) for next symbol
+                range_width = symbol_high - symbol_low
+                if range_width > 0:
+                    value = (value - symbol_low) / range_width
+                
+                # Update model to match encoder
+                model = update_adaptive_model(model, symbol)
+                break
+    
+    return decoded
+
+
+def calculate_arithmetic_efficiency(original_sequence, encoded_binary):
+    """Calculate compression efficiency for arithmetic coding
+    
+    Efficiency = (encoded bits) / (fixed-length bits)
+    Values < 1 indicate compression
+    Values > 1 indicate expansion
+    
+    Args:
+        original_sequence: Original sequence of symbols
+        encoded_binary: Binary string from encoding
+        
+    Returns:
+        Efficiency ratio
+    """
+    encoded_bits = len(encoded_binary)
+    
+    # Calculate fixed-length bits needed
+    alphabet_size = len(set(original_sequence))
+    if alphabet_size <= 1:
+        fixed_bits_per_symbol = 1
+    else:
+        fixed_bits_per_symbol = math.ceil(math.log2(alphabet_size))
+    
+    fixed_bits_total = len(original_sequence) * fixed_bits_per_symbol
+    
+    if fixed_bits_total > 0:
+        efficiency = encoded_bits / fixed_bits_total
+    else:
+        efficiency = 1.0
+    
+    return efficiency
+
+
+@app.route('/analyze_project3_part1', methods=['POST'])
+def analyze_project3_part1():
+    """Project 3 Part 1: Adaptive Arithmetic Coding - FIXED VERSION"""
+    
+    # Get input text
+    text = request.form.get('text', '')
+    
+    if not text:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file or text provided'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        text = file.read().decode('utf-8')
+    
+    if not text:
+        return jsonify({'error': 'Empty input'}), 400
+
+    # Prepare S3 sequence (clean the text)
+    s3_text = "I'm master's nightmarish, gorgonian hatemonger, his moth-eaten gonorrhoea, smothering mightiest heroism, thrashing ego-mania's (or, to me, ignorant mismanagement's) strong-arm mishmash or staggering high treason"
+    s3_cleaned = s3_text.replace(" ", "").replace(",", "").replace("'", "").replace("-", "").replace("(", "").replace(")", "").lower()
+    
+    # Define test sequences
+    test_sequences = {
+        'S1': ['A', 'B', 'B', 'C', 'A'],
+        'S2': ['A', 'B', 'C', 'A', 'B', 'A', 'C', 'B', 'A', 'B', 'C', 'C', 'A', 'C', 'B', 'A', 'A', 'B', 'B', 'C', 'C', 'A', 'B', 'A', 'A', 'B', 'B'],
+        'S3': list(s3_cleaned),
+        'Custom': list(text)
+    }
+    
+    results = {}
+    
+    for seq_name, sequence in test_sequences.items():
+        try:
+            # Encode
+            binary, debug_info = adaptive_arithmetic_encode(sequence)
+            
+            # Decode to verify
+            alphabet = debug_info.get('alphabet', sorted(list(set(sequence))))
+            decoded_sequence = adaptive_arithmetic_decode(binary, len(sequence), alphabet)
+            
+            # Calculate efficiency
+            efficiency = calculate_arithmetic_efficiency(sequence, binary)
+            
+            # Calculate theoretical entropy
+            char_counts = Counter(sequence)
+            total = len(sequence)
+            probs = [count/total for count in char_counts.values()]
+            entropy = -sum(p * math.log2(p) for p in probs if p > 0)
+            
+            # Calculate compression metrics
+            alphabet_size = len(set(sequence))
+            fixed_bits_per_symbol = math.ceil(math.log2(alphabet_size)) if alphabet_size > 1 else 1
+            fixed_bits_total = len(sequence) * fixed_bits_per_symbol
+            
+            compression_ratio = (1 - len(binary) / fixed_bits_total) * 100 if fixed_bits_total > 0 else 0
+            
+            # Prepare result
+            results[seq_name] = {
+                'sequence': sequence[:50] + (['...'] if len(sequence) > 50 else []),
+                'sequence_display': ' '.join(str(s) for s in sequence[:30]) + (' ...' if len(sequence) > 30 else ''),
+                'encoded_binary': binary[:100] + ('...' if len(binary) > 100 else ''),
+                'decoded_sequence': decoded_sequence[:50] + (['...'] if len(decoded_sequence) > 50 else []),
+                'sequence_length': len(sequence),
+                'encoded_length': len(binary),
+                'fixed_length': fixed_bits_total,
+                'efficiency': round(efficiency, 4),
+                'entropy': round(entropy, 4),
+                'compression_ratio': round(compression_ratio, 2),
+                'is_lossless': sequence == decoded_sequence,
+                'alphabet_size': alphabet_size,
+                'bits_per_symbol': round(len(binary) / len(sequence), 4) if len(sequence) > 0 else 0
+            }
+        except Exception as e:
+            results[seq_name] = {
+                'error': str(e),
+                'sequence_length': len(sequence)
+            }
+    
+    # Add summary statistics
+    successful_results = [r for r in results.values() if 'error' not in r]
+    if successful_results:
+        results['summary'] = {
+            'average_efficiency': round(sum(r['efficiency'] for r in successful_results) / len(successful_results), 4),
+            'average_compression': round(sum(r['compression_ratio'] for r in successful_results) / len(successful_results), 2),
+            'all_lossless': all(r['is_lossless'] for r in successful_results)
+        }
+    
+    return jsonify(results)
+# ===============================================
+# Part 2: Lempel-Ziv Coding (Fixed)
+# ===============================================
+def lempel_ziv_encode(sequence):
+    """Encode sequence using Lempel-Ziv (LZ78) algorithm
+    
+    Args:
+        sequence: List of symbols to encode
+        
+    Returns:
+        Tuple of (encoded_pairs, dictionary)
+        encoded_pairs: List of (code, symbol) tuples
+        dictionary: Final dictionary mapping strings to codes
+    """
+    if not sequence:
+        return [], {}
+    
+    # Initialize dictionary with empty string
+    dictionary = {'': 0}
+    next_code = 1
+    
+    # Track encoding output
+    encoded = []
+    current_string = ''
+    
+    for symbol in sequence:
+        combined_string = current_string + symbol
+        
+        if combined_string in dictionary:
+            # Continue building the current string
+            current_string = combined_string
+        else:
+            # Output: (code for current_string, next symbol)
+            encoded.append((dictionary[current_string], symbol))
+            
+            # Add new string to dictionary
+            dictionary[combined_string] = next_code
+            next_code += 1
+            
+            # Reset to empty string
+            current_string = ''
+    
+    # Handle any remaining string
+    if current_string:
+        # Output the code for remaining string with no following symbol
+        encoded.append((dictionary[current_string], None))
+    
+    return encoded, dictionary
+
+
+def lempel_ziv_decode(encoded, alphabet):
+    """Decode sequence using Lempel-Ziv (LZ78) algorithm
+    
+    Args:
+        encoded: List of (code, symbol) tuples
+        alphabet: List of symbols in the alphabet (for validation)
+        
+    Returns:
+        List of decoded symbols
+    """
+    if not encoded:
+        return []
+    
+    # Initialize dictionary with empty string
+    dictionary = {0: ''}
+    next_code = 1
+    
+    decoded = []
+    
+    for code, symbol in encoded:
+        # Get the string corresponding to the code
+        if code in dictionary:
+            decoded_string = dictionary[code]
+        else:
+            # This shouldn't happen in valid LZ78
+            decoded_string = ''
+        
+        # Output the decoded string
+        decoded.extend(list(decoded_string))
+        
+        # If there's a following symbol, output it and add to dictionary
+        if symbol is not None:
+            decoded.append(symbol)
+            
+            # Add new string to dictionary
+            new_string = decoded_string + symbol
+            dictionary[next_code] = new_string
+            next_code += 1
+    
+    return decoded
+
+
+def lempel_ziv_encode_to_binary(sequence):
+    """Encode sequence to binary using Lempel-Ziv
+    
+    Args:
+        sequence: List of symbols to encode
+        
+    Returns:
+        Binary string representation
+    """
+    if not sequence:
+        return ""
+    
+    # Get the encoding
+    encoded, dictionary = lempel_ziv_encode(sequence)
+    
+    # Determine alphabet
+    alphabet = sorted(list(set(sequence)))
+    
+    # Calculate bits needed for codes
+    max_code = len(dictionary)  # Maximum possible code value
+    code_bits = math.ceil(math.log2(max_code + 1)) if max_code > 0 else 1
+    
+    # Calculate bits needed for symbols
+    symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
+    
+    # Create symbol to binary mapping
+    symbol_to_binary = {symbol: format(i, f'0{symbol_bits}b') 
+                        for i, symbol in enumerate(alphabet)}
+    
+    # Convert encoded pairs to binary
+    binary = ""
+    for code, symbol in encoded:
+        # Add code
+        binary += format(code, f'0{code_bits}b')
+        
+        # Add symbol if present
+        if symbol is not None:
+            binary += symbol_to_binary[symbol]
+        else:
+            # Use all zeros to indicate no symbol
+            binary += '0' * symbol_bits
+    
+    return binary
+
+
+def lempel_ziv_decode_from_binary(binary, alphabet):
+    """Decode binary string using Lempel-Ziv
+    
+    Args:
+        binary: Binary string to decode
+        alphabet: List of symbols in the alphabet
+        
+    Returns:
+        List of decoded symbols
+    """
+    if not binary or not alphabet:
+        return []
+    
+    alphabet = sorted(alphabet)
+    
+    # Calculate bits per code and per symbol
+    # Estimate max dictionary size (conservative)
+    estimated_dict_size = len(binary) // 2
+    code_bits = math.ceil(math.log2(estimated_dict_size + 1)) if estimated_dict_size > 0 else 1
+    
+    symbol_bits = math.ceil(math.log2(len(alphabet))) if len(alphabet) > 1 else 1
+    
+    # Create binary to symbol mapping
+    binary_to_symbol = {format(i, f'0{symbol_bits}b'): symbol 
+                        for i, symbol in enumerate(alphabet)}
+    
+    # Initialize dictionary
+    dictionary = {0: ''}
+    next_code = 1
+    
+    decoded = []
+    i = 0
+    
+    while i + code_bits + symbol_bits <= len(binary):
+        # Read code
+        code_str = binary[i:i+code_bits]
+        code = int(code_str, 2)
+        i += code_bits
+        
+        # Read symbol
+        symbol_str = binary[i:i+symbol_bits]
+        i += symbol_bits
+        
+        # Get decoded string for this code
+        if code in dictionary:
+            decoded_string = dictionary[code]
+        else:
+            # This shouldn't happen in valid LZ78
+            decoded_string = ''
+        
+        # Output the decoded string
+        decoded.extend(list(decoded_string))
+        
+        # Get symbol (if not all zeros)
+        if symbol_str in binary_to_symbol and symbol_str != '0' * symbol_bits:
+            symbol = binary_to_symbol[symbol_str]
+            decoded.append(symbol)
+            
+            # Add to dictionary
+            new_string = decoded_string + symbol
+            dictionary[next_code] = new_string
+            next_code += 1
+        elif code != 0:  # Last encoding with no symbol
+            pass
+    
+    return decoded
+
+def calculate_lz_efficiency(original_sequence, encoded_binary):
+    """Calculate compression efficiency for Lempel-Ziv coding
+    
+    Efficiency = (encoded bits) / (fixed-length bits)
+    Values < 1 indicate compression
+    Values > 1 indicate expansion
+    
+    Args:
+        original_sequence: Original sequence of symbols
+        encoded_binary: Binary string from encoding
+        
+    Returns:
+        Efficiency ratio
+    """
+    encoded_bits = len(encoded_binary)
+    
+    # Calculate fixed-length bits needed
+    alphabet_size = len(set(original_sequence))
+    if alphabet_size <= 1:
+        fixed_bits_per_symbol = 1
+    else:
+        fixed_bits_per_symbol = math.ceil(math.log2(alphabet_size))
+    
+    fixed_bits_total = len(original_sequence) * fixed_bits_per_symbol
+    
+    if fixed_bits_total > 0:
+        efficiency = encoded_bits / fixed_bits_total
+    else:
+        efficiency = 1.0
+    
+    return efficiency
+
+
+def get_lz_dictionary_stats(dictionary):
+    """Get statistics about LZ dictionary
+    
+    Args:
+        dictionary: Dictionary from LZ encoding
+        
+    Returns:
+        Dictionary with statistics
+    """
+    # Count actual entries (excluding empty string)
+    actual_entries = sum(1 for k, v in dictionary.items() if k != '' and v != 0)
+    
+    # Get max code value
+    max_code = max(dictionary.values()) if dictionary else 0
+    
+    # Get longest string
+    longest_string = max((k for k in dictionary.keys()), key=len, default='')
+    
+    return {
+        'total_entries': len(dictionary),
+        'actual_patterns': actual_entries,
+        'max_code': max_code,
+        'longest_pattern': longest_string,
+        'longest_length': len(longest_string)
+    }
+
+
+@app.route('/analyze_project3_part2', methods=['POST'])
+def analyze_project3_part2():
+    """Project 3 Part 2: Lempel-Ziv Coding - FIXED VERSION"""
+    
+    # Get input text
+    text = request.form.get('text', '')
+    
+    if not text:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file or text provided'}), 400
+
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        text = file.read().decode('utf-8')
+    
+    if not text:
+        return jsonify({'error': 'Empty input'}), 400
+
+    # Prepare S3 sequence (clean the text)
+    s3_text = "I'm master's nightmarish, gorgonian hatemonger, his moth-eaten gonorrhoea, smothering mightiest heroism, thrashing ego-mania's (or, to me, ignorant mismanagement's) strong-arm mishmash or staggering high treason"
+    s3_cleaned = s3_text.replace(" ", "").replace(",", "").replace("'", "").replace("-", "").replace("(", "").replace(")", "").lower()
+    
+    # Define test sequences
+    test_sequences = {
+        'S1': ['A', 'B', 'B', 'C', 'A'],
+        'S2': ['A', 'B', 'C', 'A', 'B', 'A', 'C', 'B', 'A', 'B', 'C', 'C', 'A', 'C', 'B', 'A', 'A', 'B', 'B', 'C', 'C', 'A', 'B', 'A', 'A', 'B', 'B'],
+        'S3': list(s3_cleaned),
+        'Custom': list(text)
+    }
+    
+    results = {}
+    
+    for seq_name, sequence in test_sequences.items():
+        try:
+            # Encode
+            encoded_pairs, dictionary = lempel_ziv_encode(sequence)
+            binary = lempel_ziv_encode_to_binary(sequence)
+            
+            # Get dictionary statistics
+            dict_stats = get_lz_dictionary_stats(dictionary)
+            
+            # Decode to verify
+            alphabet = sorted(list(set(sequence)))
+            decoded_sequence = lempel_ziv_decode(encoded_pairs, alphabet)
+            
+            # Also test binary decode
+            decoded_from_binary = lempel_ziv_decode_from_binary(binary, alphabet)
+            
+            # Calculate efficiency
+            efficiency = calculate_lz_efficiency(sequence, binary)
+            
+            # Calculate theoretical entropy
+            char_counts = Counter(sequence)
+            total = len(sequence)
+            probs = [count/total for count in char_counts.values()]
+            entropy = -sum(p * math.log2(p) for p in probs if p > 0)
+            
+            # Calculate compression metrics
+            alphabet_size = len(set(sequence))
+            fixed_bits_per_symbol = math.ceil(math.log2(alphabet_size)) if alphabet_size > 1 else 1
+            fixed_bits_total = len(sequence) * fixed_bits_per_symbol
+            
+            compression_ratio = (1 - len(binary) / fixed_bits_total) * 100 if fixed_bits_total > 0 else 0
+            
+            # Format encoded pairs for display
+            pairs_display = str(encoded_pairs[:10]) + ('...' if len(encoded_pairs) > 10 else '')
+            
+            # Prepare result
+            results[seq_name] = {
+                'sequence': sequence[:50] + (['...'] if len(sequence) > 50 else []),
+                'sequence_display': ' '.join(str(s) for s in sequence[:30]) + (' ...' if len(sequence) > 30 else ''),
+                'encoded_pairs': pairs_display,
+                'encoded_binary': binary[:100] + ('...' if len(binary) > 100 else ''),
+                'decoded_sequence': decoded_sequence[:50] + (['...'] if len(decoded_sequence) > 50 else []),
+                'sequence_length': len(sequence),
+                'encoded_length': len(binary),
+                'fixed_length': fixed_bits_total,
+                'efficiency': round(efficiency, 4),
+                'entropy': round(entropy, 4),
+                'compression_ratio': round(compression_ratio, 2),
+                'is_lossless': sequence == decoded_sequence,
+                'binary_decode_lossless': sequence == decoded_from_binary,
+                'alphabet_size': alphabet_size,
+                'dictionary_size': dict_stats['total_entries'],
+                'patterns_found': dict_stats['actual_patterns'],
+                'longest_pattern': dict_stats['longest_pattern'],
+                'longest_pattern_length': dict_stats['longest_length'],
+                'num_encoded_pairs': len(encoded_pairs),
+                'bits_per_symbol': round(len(binary) / len(sequence), 4) if len(sequence) > 0 else 0
+            }
+        except Exception as e:
+            results[seq_name] = {
+                'error': str(e),
+                'sequence_length': len(sequence)
+            }
+    
+    # Add summary statistics
+    successful_results = [r for r in results.values() if 'error' not in r]
+    if successful_results:
+        results['summary'] = {
+            'average_efficiency': round(sum(r['efficiency'] for r in successful_results) / len(successful_results), 4),
+            'average_compression': round(sum(r['compression_ratio'] for r in successful_results) / len(successful_results), 2),
+            'all_lossless': all(r['is_lossless'] for r in successful_results),
+            'total_patterns_found': sum(r['patterns_found'] for r in successful_results)
+        }
+    
+    return jsonify(results)
+    
 if __name__ == '__main__':
     app.run(debug=True)
