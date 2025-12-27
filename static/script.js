@@ -314,12 +314,19 @@ $(document).ready(function () {
                 <img src="/static/Icons/HardDrive.ico">
                 <span>Project 3</span>
             </div>
+            <div class="Folder" id="project5-folder">
+                <img src="/static/Icons/HardDrive.ico">
+                <span>Project 5</span>
+            </div>
         `);
 
         $('.Folder').on('click', function (e) {
             $('.Folder').removeClass('selected');
             $(this).addClass('selected');
         });
+
+        // Initialize Project 5 handlers
+        initProject5();
 
         openWindow($("#my-computer-window"), "My Computer");
     });
@@ -2606,3 +2613,215 @@ $(document).on('contextmenu', '#project3-folder', function (e) {
 $(document).on('dblclick', '#project3-folder', function () {
     showProject3AnalysisDialog();
 });
+
+// Project 5 Integration
+function initProject5() {
+    $('#project5-folder').off('dblclick').on('dblclick', function () {
+        showProject5Dialog();
+    });
+}
+
+function showProject5Dialog() {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 400;
+    const dialogHeight = 500;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project5-dialog';
+    let dialog = $(`#${dialogId}`);
+
+    if (dialog.length === 0) {
+        dialog = $(`
+            <div id="${dialogId}" class="window"
+                style="display: none; width: ${dialogWidth}px; height: ${dialogHeight}px; position: absolute; z-index: 100;">
+                <div class="title-bar">
+                    <div class="title-bar-text">Project 5 - BPSK Simulation</div>
+                    <div class="title-bar-controls">
+                        <button aria-label="Minimize"></button>
+                        <button aria-label="Maximize"></button>
+                        <button aria-label="Close"></button>
+                    </div>
+                </div>
+                <div class="window-body">
+                    <div style="padding: 15px; font-family: 'Tahoma', sans-serif; font-size: 11px;">
+                        <form id="sim-form-dialog">
+                            <fieldset style="border: 1px solid #d0d0bf; padding: 10px; margin-bottom: 10px; border-radius: 3px;">
+                                <legend style="color: #0046d5;">Simulation Parameters</legend>
+                                
+                                <div style="margin-bottom: 5px;">
+                                    <label>SNR Start (dB):</label><br>
+                                    <input type="number" name="snr_start" value="0" step="0.5" style="width: 100%;">
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <label>SNR End (dB):</label><br>
+                                    <input type="number" name="snr_end" value="10" step="0.5" style="width: 100%;">
+                                </div>
+                                <div style="margin-bottom: 5px;">
+                                    <label>SNR Step (dB):</label><br>
+                                    <input type="number" name="snr_step" value="2" step="0.5" style="width: 100%;">
+                                </div>
+                            </fieldset>
+
+                            <fieldset style="border: 1px solid #d0d0bf; padding: 10px; margin-bottom: 10px; border-radius: 3px;">
+                                <legend style="color: #0046d5;">Channel & Coding</legend>
+                                
+                                <div style="margin-bottom: 5px;">
+                                    <label>Channel:</label><br>
+                                    <select name="channel" style="width: 100%;">
+                                        <option value="awgn">AWGN</option>
+                                        <option value="rayleigh">Rayleigh</option>
+                                    </select>
+                                </div>
+
+                                <div style="margin-bottom: 5px;">
+                                    <label>Channel Coding:</label><br>
+                                    <select name="coding" id="coding-select-dialog" style="width: 100%;">
+                                        <option value="none">None</option>
+                                        <option value="repetition">Repetition Code</option>
+                                        <option value="hamming">Hamming Code</option>
+                                    </select>
+                                </div>
+
+                                <div id="repetition-options-dialog" style="display:none; margin-bottom: 5px;">
+                                    <label>Repetition Rate:</label><br>
+                                    <select name="repetition_rate" style="width: 100%;">
+                                        <option value="1/3">1/3</option>
+                                        <option value="1/5">1/5</option>
+                                    </select>
+                                </div>
+
+                                <div id="hamming-options-dialog" style="display:none; margin-bottom: 5px;">
+                                    <label>Hamming Type:</label><br>
+                                    <select name="hamming_type" style="width: 100%;">
+                                        <option value="7,4">(7,4)</option>
+                                        <option value="15,11">(15,11)</option>
+                                    </select>
+                                </div>
+                            </fieldset>
+
+                             <div style="text-align: right; margin-top: 10px;">
+                                <button type="submit" class="xp-button" id="run-sim-btn">Run Simulation</button>
+                                <button type="button" class="xp-button" id="cancel-sim-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="resize-handle"></div>
+            </div>
+        `);
+
+        $('body').append(dialog);
+        makeWindowInteractive(dialog);
+
+        // Dynamic Coding Options
+        dialog.find('#coding-select-dialog').on('change', function () {
+            const coding = $(this).val();
+            dialog.find('#repetition-options-dialog').toggle(coding === 'repetition');
+            dialog.find('#hamming-options-dialog').toggle(coding === 'hamming');
+        });
+
+        // Cancel
+        dialog.find('#cancel-sim-btn').on('click', function () {
+            dialog.hide();
+            removeFromTaskbar(dialogId);
+        });
+
+        // Close button in title bar
+        dialog.find('.title-bar-controls button[aria-label="Close"]').on('click', function () {
+            dialog.hide();
+            removeFromTaskbar(dialogId);
+        });
+
+        // Submit
+        dialog.find('#sim-form-dialog').on('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+
+            // Show loading or disable button
+            dialog.find('#run-sim-btn').prop('disabled', true).text('Running...');
+
+            $.ajax({
+                url: '/run_simulation',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    dialog.find('#run-sim-btn').prop('disabled', false).text('Run Simulation');
+                    dialog.hide();
+                    removeFromTaskbar(dialogId);
+                    showProject5Results(response);
+                },
+                error: function (xhr) {
+                    dialog.find('#run-sim-btn').prop('disabled', false).text('Run Simulation');
+                    alert('Error: ' + (xhr.responseJSON ? xhr.responseJSON.error : 'Simulation failed'));
+                }
+            });
+        });
+    }
+
+    dialog.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(dialog, 'Project 5 - BPSK Simulation');
+    bringToFront(dialog);
+}
+
+function showProject5Results(data) {
+    const windowWidth = $(window).width();
+    const windowHeight = $(window).height();
+    const dialogWidth = 700;
+    const dialogHeight = 550;
+
+    const left = (windowWidth - dialogWidth) / 2;
+    const top = (windowHeight - dialogHeight) / 2;
+
+    const dialogId = 'project5-results-' + Math.floor(Math.random() * 10000); // Unique ID for multiple runs
+
+    const resultWindow = $(`
+        <div id="${dialogId}" class="window"
+            style="width: ${dialogWidth}px; height: ${dialogHeight}px; position: absolute; z-index: 100;">
+            <div class="title-bar">
+                <div class="title-bar-text">Project 5 Results</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div style="padding: 10px; display: flex; flex-direction: column; align-items: center; height: 100%; box-sizing: border-box;">
+                    <h3 style="margin: 5px 0;">BER vs SNR</h3>
+                    <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; width: 100%; overflow: hidden; background: white; border: 1px inset #fff;">
+                         <img src="/static/${data.plot_url}" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+    `);
+
+    $('body').append(resultWindow);
+    makeWindowInteractive(resultWindow);
+
+    resultWindow.css({
+        left: left + "px",
+        top: top + "px"
+    }).show();
+
+    addToTaskbar(resultWindow, 'Project 5 Results');
+    bringToFront(resultWindow);
+
+    // Close handler
+    resultWindow.find('.title-bar-controls button[aria-label="Close"]').on('click', function () {
+        resultWindow.hide();
+        removeFromTaskbar(dialogId);
+        resultWindow.remove();
+    });
+}

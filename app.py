@@ -8,6 +8,7 @@ from collections import defaultdict, Counter
 import sys
 import json
 from decimal import Decimal, getcontext
+from utils.bpsk_simulation import run_bpsk_simulation
 
 app = Flask(__name__)
 getcontext().prec = 50
@@ -1447,5 +1448,27 @@ def analyze_project3_part2():
     
     return jsonify(results)
     
+# ===============================================
+# PROJECT 5 - BPSK BER Simulation
+# ===============================================
+
+# NOTE: Ensure 'render_template' is imported from Flask at the top of your file.
+# e.g., from flask import Flask, request, jsonify, render_template
+
+@app.route('/project5')
+def project5():
+    """Render the Project 5 page for BPSK BER simulation"""
+    return render_template('project5.html')
+
+@app.route('/run_simulation', methods=['POST'])
+def run_simulation():
+    """Run the BPSK simulation based on form data"""
+    try:
+        data = request.json
+        result = run_bpsk_simulation(data)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 if __name__ == '__main__':
     app.run(debug=True)

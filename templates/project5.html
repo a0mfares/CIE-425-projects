@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BPSK BER Simulation</title>
+    <link rel="stylesheet" href="https://unpkg.com/xp.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <style>
+        body {
+            background-color: #245dc1; /* Typical XP blue */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Tahoma', sans-serif;
+            overflow: auto; /* Allow scrolling if content is tall */
+        }
+        
+        .simulation-window {
+            width: 800px;
+            background: #ece9d8;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            border-radius: 3px 3px 0 0;
+            overflow: hidden;
+        }
+
+        .window-content {
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .results {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border: 1px inset #fff;
+            padding: 10px;
+            background: white;
+            min-height: 400px;
+        }
+
+        fieldset {
+            border: 1px solid #d0d0bf;
+            padding: 10px;
+            margin: 0;
+            border-radius: 3px;
+        }
+
+        legend {
+            color: #0046d5;
+            padding: 0 5px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+
+        input[type="number"], select {
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            padding: 2px;
+            border: 1px solid #7f9db9;
+        }
+
+        button.xp-style {
+            padding: 5px 15px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        
+        .loading {
+            display: none;
+            margin-top: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        #plot-image {
+            max-width: 100%;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="simulation-window window">
+    <div class="title-bar">
+        <div class="title-bar-text">Project 5 - BPSK BER Simulation</div>
+        <div class="title-bar-controls">
+            <button aria-label="Minimize"></button>
+            <button aria-label="Maximize"></button>
+            <button aria-label="Close" onclick="window.location.href='/'"></button>
+        </div>
+    </div>
+    
+    <div class="window-body" style="height: auto; margin:0;">
+        <!-- Menu Bar -->
+        <menu role="menubar">
+            <li role="menuitem" onclick="window.location.href='/'">File</li>
+            <li role="menuitem">View</li>
+            <li role="menuitem">Help</li>
+        </menu>
+
+        <div class="window-content">
+            <div class="controls">
+                <form id="sim-form" onsubmit="runSimulation(event)">
+                    <fieldset>
+                        <legend>Simulation Parameters</legend>
+                        
+                        <div class="form-group">
+                            <label>SNR Start (dB):</label>
+                            <input type="number" name="snr_start" value="0" step="0.5" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>SNR End (dB):</label>
+                            <input type="number" name="snr_end" value="10" step="0.5" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>SNR Step (dB):</label>
+                            <input type="number" name="snr_step" value="2" step="0.5" required>
+                        </div>
+                    </fieldset>
+
+                    <fieldset>
+                        <legend>Channel & Coding</legend>
+                        
+                        <div class="form-group">
+                            <label>Channel:</label>
+                            <select name="channel" id="channel-select">
+                                <option value="awgn">AWGN</option>
+                                <option value="rayleigh">Rayleigh</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Channel Coding:</label>
+                            <select name="coding" id="coding-select" onchange="updateCodingOptions()">
+                                <option value="none">None</option>
+                                <option value="repetition">Repetition Code</option>
+                                <option value="hamming">Hamming Code</option>
+                            </select>
+                        </div>
+
+                        <!-- Dynamic Options -->
+                        <div id="repetition-options" style="display:none;" class="form-group">
+                            <label>Repetition Rate:</label>
+                            <select name="repetition_rate">
+                                <option value="1/3">1/3</option>
+                                <option value="1/5">1/5</option>
+                            </select>
+                        </div>
+
+                        <div id="hamming-options" style="display:none;" class="form-group">
+                            <label>Hamming Type:</label>
+                            <select name="hamming_type">
+                                <option value="7,4">(7,4)</option>
+                                <option value="15,11">(15,11)</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button type="submit" class="xp-button">Run Simulation</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="results">
+                <h3>Simulation Results</h3>
+                <div id="loading" class="loading">Running simulation... Please wait...</div>
+                <img id="plot-image" src="" alt="BER Plot will appear here">
+            </div>
+        </div>
+        
+        <!-- Status Bar -->
+        <div style="border-top: 1px solid #999; padding: 2px 5px; font-size: 11px; background:#ece9d8;">
+            Ready
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateCodingOptions() {
+        const coding = document.getElementById('coding-select').value;
+        document.getElementById('repetition-options').style.display = coding === 'repetition' ? 'block' : 'none';
+        document.getElementById('hamming-options').style.display = coding === 'hamming' ? 'block' : 'none';
+    }
+
+    async function runSimulation(event) {
+        event.preventDefault();
+        
+        const form = document.getElementById('sim-form');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        // Show loading
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('plot-image').style.display = 'none';
+        
+        try {
+            const response = await fetch('/run_simulation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Simulation failed');
+            }
+            
+            const result = await response.json();
+            
+            // Display Result
+            const plotImg = document.getElementById('plot-image');
+            plotImg.src = "/static/" + result.plot_url;
+            plotImg.style.display = 'block';
+            
+        } catch (error) {
+            alert('Error running simulation: ' + error.message);
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+</script>
+
+</body>
+</html>
