@@ -1,6 +1,8 @@
 # 🚀 Shannon's Sandbox: Information Theory Course Project
 
 Welcome to **Shannon's Sandbox**  This is a dynamic, high-precision web-based toolkit built for diving deep into the fascinating world of Information Theory, Source Coding, and Digital Communications.
+## Demo
+![](demo.gif)
 
 ## ✨ Features
 
